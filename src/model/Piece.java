@@ -25,6 +25,14 @@ public abstract class Piece {
         board.positions[nx][ny] = onBoard;
     };
 
+    public team getColor() {
+        return color;
+    }
+
+    public char getOnBoard() {
+        return onBoard;
+    }
+
     public void die() {
 
     };

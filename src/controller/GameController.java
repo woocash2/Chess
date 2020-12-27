@@ -4,13 +4,20 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.TilePane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+
+import java.util.ArrayList;
 import java.util.function.Function;
-import model.Board;
+
+import model.*;
+import model.utils.ImageCropper;
 
 
 public class GameController {
@@ -32,11 +39,13 @@ public class GameController {
     Color darkColor = Color.DARKCYAN;
     Color lightColor = Color.LIGHTGRAY;
     Tile[][] tiles;
+    ArrayList<PieceImg> pieces = new ArrayList<>();
     Rectangle stroke;
 
     @FXML
     private GridPane gridPane;
     private TilePane tilePane;
+    private GridPane piecesGrid;
 
     @FXML
     public void initialize() {
@@ -44,6 +53,7 @@ public class GameController {
         stroke.setFill(strokeColor);
         stroke.setStroke(strokeColor);
         tilePane = (TilePane) gridPane.getChildren().get(1); // according to game.fxml
+        piecesGrid = (GridPane) gridPane.getChildren().get(2); // according to game.fxml
 
         tiles = new Tile[8][8];
         board = new Board();
@@ -74,6 +84,36 @@ public class GameController {
             Label letterBottom = labelFactory.apply(letters[j]);
             letterBottom.setAlignment(Pos.TOP_CENTER);
             tilePane.getChildren().add(letterBottom);
+        }
+
+        fillBoard();
+    }
+
+    public void fillBoard() { // add pieces into chessboard
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (board.isEmpty(i, j))
+                    continue;
+                Piece piece;
+                piece = switch (board.get(i, j)) {
+                    case 'k' -> new King(i, j, Piece.team.WHITE);
+                    case 'K' -> new King(i, j, Piece.team.BLACK);
+                    case 'q' -> new Queen(i, j, Piece.team.WHITE);
+                    case 'Q' -> new Queen(i, j, Piece.team.BLACK);
+                    case 'b' -> new Bishop(i, j, Piece.team.WHITE);
+                    case 'B' -> new Bishop(i, j, Piece.team.BLACK);
+                    case 'r' -> new Rook(i, j, Piece.team.WHITE);
+                    case 'R' -> new Rook(i, j, Piece.team.BLACK);
+                    case 'n' -> new Knight(i, j, Piece.team.WHITE);
+                    case 'N' -> new Knight(i, j, Piece.team.BLACK);
+                    case 'p' -> new Pawn(i, j, Piece.team.WHITE);
+                    default -> new Pawn(i, j, Piece.team.BLACK);
+                };
+
+                PieceImg pieceImg = new PieceImg(piece, this);
+                pieces.add(pieceImg);
+                piecesGrid.add(pieceImg, j, i);
+            }
         }
     }
 

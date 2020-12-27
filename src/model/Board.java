@@ -46,6 +46,7 @@ public class Board {
     public boolean isEmpty(int x, int y) {
         return positions[x][y] == '-';
     }
+    public char get(int x, int y) { return positions[x][y]; }
 
     public static void main(String[] args) {
         Board board = new Board();
