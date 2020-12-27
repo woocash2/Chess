@@ -2,6 +2,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -10,10 +11,11 @@ public class Main extends Application {
     public void start(Stage stage) throws Exception {
         Parent mainMenu = FXMLLoader.load(getClass().getResource("view/menu.fxml"));
         stage.setTitle("CHESS");
-        stage.setScene(new Scene(mainMenu, 1200, 800));
+        stage.setScene(new Scene(mainMenu));
         stage.setMinWidth(1200);
         stage.setMinHeight(800);
-
+        stage.setFullScreen(true);
+        stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
         stage.show();
     }
 
