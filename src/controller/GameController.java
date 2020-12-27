@@ -42,10 +42,13 @@ public class GameController {
     ArrayList<PieceImg> pieces = new ArrayList<>();
     Rectangle stroke;
 
+    PieceImg selectedPiece = null;
+
     @FXML
-    private GridPane gridPane;
-    private TilePane tilePane;
-    private GridPane piecesGrid;
+    GridPane gridPane;
+    TilePane tilePane;
+    TilePane shadowTiles;
+    GridPane piecesGrid;
 
     @FXML
     public void initialize() {
@@ -53,7 +56,11 @@ public class GameController {
         stroke.setFill(strokeColor);
         stroke.setStroke(strokeColor);
         tilePane = (TilePane) gridPane.getChildren().get(1); // according to game.fxml
-        piecesGrid = (GridPane) gridPane.getChildren().get(2); // according to game.fxml
+        shadowTiles = (TilePane) gridPane.getChildren().get(2); // according to game.fxml
+        piecesGrid = (GridPane) gridPane.getChildren().get(3); // according to game.fxml
+
+        shadowTiles.setMouseTransparent(true);
+        piecesGrid.setMouseTransparent(true);
 
         tiles = new Tile[8][8];
         board = new Board();
@@ -70,10 +77,11 @@ public class GameController {
             tilePane.getChildren().add(numLeft);
             for (int j = 0; j < 8; j++) {
                 if ((i + j) % 2 == 1)
-                    tiles[i][j] = new Tile(board, i, j, darkColor);
+                    tiles[i][j] = new Tile(board, i, j, darkColor, this);
                 else
-                    tiles[i][j] = new Tile(board, i, j, lightColor);
+                    tiles[i][j] = new Tile(board, i, j, lightColor, this);
                 tilePane.getChildren().add(tiles[i][j]);
+                shadowTiles.getChildren().add(tiles[i][j].shadow);
             }
             Label numRight = labelFactory.apply(numbers[i]);
             numRight.setAlignment(Pos.CENTER_LEFT);
@@ -96,25 +104,25 @@ public class GameController {
                     continue;
                 Piece piece;
                 piece = switch (board.get(i, j)) {
-                    case 'k' -> new King(i, j, Piece.team.WHITE);
-                    case 'K' -> new King(i, j, Piece.team.BLACK);
-                    case 'q' -> new Queen(i, j, Piece.team.WHITE);
-                    case 'Q' -> new Queen(i, j, Piece.team.BLACK);
-                    case 'b' -> new Bishop(i, j, Piece.team.WHITE);
-                    case 'B' -> new Bishop(i, j, Piece.team.BLACK);
-                    case 'r' -> new Rook(i, j, Piece.team.WHITE);
-                    case 'R' -> new Rook(i, j, Piece.team.BLACK);
-                    case 'n' -> new Knight(i, j, Piece.team.WHITE);
-                    case 'N' -> new Knight(i, j, Piece.team.BLACK);
-                    case 'p' -> new Pawn(i, j, Piece.team.WHITE);
-                    default -> new Pawn(i, j, Piece.team.BLACK);
+                    case 'k' -> new King(i, j, Piece.team.WHITE, board);
+                    case 'K' -> new King(i, j, Piece.team.BLACK, board);
+                    case 'q' -> new Queen(i, j, Piece.team.WHITE, board);
+                    case 'Q' -> new Queen(i, j, Piece.team.BLACK, board);
+                    case 'b' -> new Bishop(i, j, Piece.team.WHITE, board);
+                    case 'B' -> new Bishop(i, j, Piece.team.BLACK, board);
+                    case 'r' -> new Rook(i, j, Piece.team.WHITE, board);
+                    case 'R' -> new Rook(i, j, Piece.team.BLACK, board);
+                    case 'n' -> new Knight(i, j, Piece.team.WHITE, board);
+                    case 'N' -> new Knight(i, j, Piece.team.BLACK, board);
+                    case 'p' -> new Pawn(i, j, Piece.team.WHITE, board);
+                    default -> new Pawn(i, j, Piece.team.BLACK, board);
                 };
 
                 PieceImg pieceImg = new PieceImg(piece, this);
                 pieces.add(pieceImg);
                 piecesGrid.add(pieceImg, j, i);
+                tiles[i][j].putPieceOn(pieceImg);
             }
         }
     }
-
 }

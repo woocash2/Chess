@@ -9,13 +9,14 @@ public abstract class Piece {
     protected team color;
     protected char onBoard;
     protected Board board;
-    protected int x, y; // position on board
-    protected ArrayList<Pair<Integer, Integer>> reachablePositions;
+    public int x, y; // position on board
+    public ArrayList<Pair<Integer, Integer>> reachablePositions = new ArrayList<>();
 
-    public Piece(int x, int y, team col) {
+    public Piece(int x, int y, team col, Board board) {
         this.x = x;
         this.y = y;
         this.color = col;
+        this.board = board;
     }
 
     public abstract void updateReachablePositions();
@@ -23,6 +24,8 @@ public abstract class Piece {
     public void move(int nx, int ny) {
         board.positions[x][y] = '-';
         board.positions[nx][ny] = onBoard;
+        x = nx;
+        y = ny;
     };
 
     public team getColor() {

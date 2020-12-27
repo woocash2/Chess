@@ -3,8 +3,8 @@ package model;
 import javafx.util.Pair;
 
 public class Pawn extends Piece {
-    public Pawn(int x, int y, team col) {
-        super(x, y, col);
+    public Pawn(int x, int y, team col, Board board) {
+        super(x, y, col, board);
         if (col == team.WHITE)
             onBoard = 'p';
         else

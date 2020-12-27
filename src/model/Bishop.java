@@ -6,8 +6,8 @@ import java.util.function.Function;
 
 public class Bishop extends Piece {
 
-    public Bishop(int x, int y, team col) {
-        super(x, y, col);
+    public Bishop(int x, int y, team col, Board board) {
+        super(x, y, col, board);
         if (col == team.WHITE)
             onBoard = 'b';
         else

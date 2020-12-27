@@ -6,8 +6,8 @@ import java.util.function.Function;
 
 public class Rook extends Piece {
 
-    public Rook(int x, int y, team col) {
-        super(x, y, col);
+    public Rook(int x, int y, team col, Board board) {
+        super(x, y, col, board);
         if (col == team.WHITE)
             onBoard = 'r';
         else
