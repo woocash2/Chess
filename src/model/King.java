@@ -16,7 +16,7 @@ public class King extends Piece {
         reachablePositions.clear();
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
-                if ((x + i == x && y + j == y) || x + i < 0 || x + j < 0 || x + i >= 8 || x + j >= 8 || !board.isEmpty(x + i, y + j))
+                if ((x + i == x && y + j == y) || x + i < 0 || y + j < 0 || x + i >= 8 || y + j >= 8 || !board.isEmpty(x + i, y + j))
                     continue;
                 else
                     reachablePositions.add(new Pair<>(x + i, y + j));
