@@ -4,10 +4,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.TilePane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -17,7 +14,6 @@ import java.util.ArrayList;
 import java.util.function.Function;
 
 import model.*;
-import model.utils.ImageCropper;
 
 
 public class GameController {
@@ -35,14 +31,15 @@ public class GameController {
     };
 
     Board board;
+    Tile[][] tiles;
+    ArrayList<PieceImg> pieces = new ArrayList<>();
+    PieceImg selectedPiece = null;
+    Piece.team turn = Piece.team.WHITE;
+
+    Rectangle stroke;
     Color strokeColor = Color.BLACK;
     Color darkColor = Color.DARKCYAN;
     Color lightColor = Color.LIGHTGRAY;
-    Tile[][] tiles;
-    ArrayList<PieceImg> pieces = new ArrayList<>();
-    Rectangle stroke;
-
-    PieceImg selectedPiece = null;
 
     @FXML
     GridPane gridPane;
@@ -81,7 +78,7 @@ public class GameController {
                 else
                     tiles[i][j] = new Tile(board, i, j, lightColor, this);
                 tilePane.getChildren().add(tiles[i][j]);
-                shadowTiles.getChildren().add(tiles[i][j].shadow);
+                shadowTiles.getChildren().add(tiles[i][j].shadows);
             }
             Label numRight = labelFactory.apply(numbers[i]);
             numRight.setAlignment(Pos.CENTER_LEFT);
@@ -124,5 +121,12 @@ public class GameController {
                 tiles[i][j].putPieceOn(pieceImg);
             }
         }
+    }
+
+    public void notifyTurnMade() {
+        if (turn == Piece.team.WHITE)
+            turn = Piece.team.BLACK;
+        else
+            turn = Piece.team.WHITE;
     }
 }

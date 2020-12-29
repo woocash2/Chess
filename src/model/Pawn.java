@@ -20,9 +20,9 @@ public class Pawn extends Piece {
             reachablePositions.add(new Pair<>(x + 1, y));
 
         for (int j = -1; j <= 1; j += 2) {
-            if (color == team.WHITE && x - 1 >= 0 && y + j >= 0 && y + j < 8 && Character.isUpperCase(board.get(x - 1, y + j)))
+            if (color == team.WHITE && board.inBoardRange(x - 1, y + j) && Character.isUpperCase(board.get(x - 1, y + j)))
                 takeablePositions.add(new Pair<>(x - 1, y + j));
-            if (color == team.BLACK && x + 1 < 8 && y + j >= 0 && y + j < 8 && Character.isLowerCase(board.get(x - 1, y + j)))
+            if (color == team.BLACK && board.inBoardRange(x + 1, y + j) && Character.isLowerCase(board.get(x + 1, y + j)))
                 takeablePositions.add(new Pair<>(x + 1, y + j));
         }
     }
