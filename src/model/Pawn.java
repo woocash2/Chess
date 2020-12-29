@@ -3,6 +3,9 @@ package model;
 import javafx.util.Pair;
 
 public class Pawn extends Piece {
+
+    public boolean moved = false;
+
     public Pawn(int x, int y, team col, Board board) {
         super(x, y, col, board);
         if (col == team.WHITE)
@@ -15,7 +18,7 @@ public class Pawn extends Piece {
     public void updatePositions() {
         reachablePositions.clear();
         takeablePositions.clear();
-        
+
         if (color == team.WHITE && x - 1 >= 0 && board.isEmpty(x - 1, y))
             reachablePositions.add(new Pair<>(x - 1, y));
         if (color == team.BLACK && x + 1 < 8 && board.isEmpty(x + 1, y))
@@ -26,6 +29,13 @@ public class Pawn extends Piece {
                 takeablePositions.add(new Pair<>(x - 1, y + j));
             if (color == team.BLACK && board.inBoardRange(x + 1, y + j) && Character.isLowerCase(board.get(x + 1, y + j)))
                 takeablePositions.add(new Pair<>(x + 1, y + j));
+        }
+
+        if (!moved) {
+            if (color == team.WHITE && x - 2 >= 0 && board.isEmpty(x - 1, y))
+                reachablePositions.add(new Pair<>(x - 2, y));
+            if (color == team.BLACK && x + 2 < 8 && board.isEmpty(x + 1, y))
+                reachablePositions.add(new Pair<>(x + 2, y));
         }
     }
 }

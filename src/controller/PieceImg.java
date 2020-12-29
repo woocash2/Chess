@@ -2,6 +2,7 @@ package controller;
 
 import javafx.scene.image.ImageView;
 import javafx.util.Pair;
+import model.Pawn;
 import model.Piece;
 import model.utils.ImageCropper;
 
@@ -20,6 +21,8 @@ public class PieceImg extends ImageView {
 
     public void move(int x, int y) {
         piece.move(x, y);
+        if (piece.getClass() == Pawn.class && !((Pawn)piece).moved)
+            ((Pawn)piece).moved = true;
         gameController.piecesGrid.getChildren().remove(this);
         gameController.piecesGrid.add(this, y, x);
     }
