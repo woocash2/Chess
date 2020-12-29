@@ -14,6 +14,8 @@ public class Pawn extends Piece {
     @Override
     public void updatePositions() {
         reachablePositions.clear();
+        takeablePositions.clear();
+        
         if (color == team.WHITE && x - 1 >= 0 && board.isEmpty(x - 1, y))
             reachablePositions.add(new Pair<>(x - 1, y));
         if (color == team.BLACK && x + 1 < 8 && board.isEmpty(x + 1, y))
