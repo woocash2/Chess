@@ -1,5 +1,7 @@
 package model;
 
+import model.utils.PositionUpdater;
+
 public class Queen extends Piece {
 
     public Queen(int x, int y, Piece.team col, Board board) {
@@ -11,9 +13,10 @@ public class Queen extends Piece {
     }
 
     @Override
-    public void updateReachablePositions() {
+    public void updatePositions() {
         reachablePositions.clear();
-        Rook.boardIteration(p -> reachablePositions.add(p), board, x, y);
-        Bishop.boardIteration(p -> reachablePositions.add(p), board, x, y);
+        takeablePositions.clear();
+        Bishop.boardIteration(PositionUpdater.addToReachableFunction(this), PositionUpdater.addToTakeableFunction(this), board, x, y);
+        Rook.boardIteration(PositionUpdater.addToReachableFunction(this), PositionUpdater.addToTakeableFunction(this) ,board, x, y);
     }
 }
