@@ -15,7 +15,7 @@ public class Bishop extends Piece {
     }
 
     public static <T, E> void boardIteration(Function<Pair<Integer, Integer>, T> f1, Function<Pair<Integer, Integer>, E> f2, Board board, int x, int y) {
-        for (int i = x + 1, j = y + 1; i < 8 && j < 8; i++, j++) {
+        for (int i = x + 1, j = y + 1; board.inBoardRange(i, j); i++, j++) {
             if (board.isEmpty(i, j))
                 f1.apply(new Pair<>(i, j));
             else {
@@ -23,7 +23,7 @@ public class Bishop extends Piece {
                 break;
             }
         }
-        for (int i = x - 1, j = y - 1; i >= 0 && j >= 0; i--, j--) {
+        for (int i = x - 1, j = y - 1; board.inBoardRange(i, j); i--, j--) {
             if (board.isEmpty(i, j))
                 f1.apply(new Pair<>(i, j));
             else {
@@ -31,7 +31,7 @@ public class Bishop extends Piece {
                 break;
             }
         }
-        for (int i = x + 1, j = y - 1; i < 8 && j >= 0; i++, j--) {
+        for (int i = x + 1, j = y - 1; board.inBoardRange(i, j); i++, j--) {
             if (board.isEmpty(i, j))
                 f1.apply(new Pair<>(i, j));
             else {
@@ -39,7 +39,7 @@ public class Bishop extends Piece {
                 break;
             }
         }
-        for (int i = x - 1, j = y + 1; i >= 0 && j < 8; i--, j++) {
+        for (int i = x - 1, j = y + 1; board.inBoardRange(i, j); i--, j++) {
             if (board.isEmpty(i, j))
                 f1.apply(new Pair<>(i, j));
             else {

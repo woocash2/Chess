@@ -1,5 +1,7 @@
 package model;
 
+import javafx.util.Pair;
+
 public class Board {
 
     char[][] positions = new char[8][8];
@@ -47,6 +49,17 @@ public class Board {
         return positions[x][y] == '-';
     }
     public char get(int x, int y) { return positions[x][y]; }
+
+    public boolean inBoardRange(int x, int y) {
+        return x >= 0 && x < 8 && y >= 0 && y < 8;
+    }
+
+    public boolean opponentStaysOn(int x, int y, Piece.team myTeam) {
+        if (myTeam == Piece.team.WHITE)
+            return Character.isUpperCase(positions[x][y]);
+        else
+            return Character.isLowerCase(positions[x][y]);
+    }
 
     public static void main(String[] args) {
         Board board = new Board();
