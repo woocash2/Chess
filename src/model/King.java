@@ -45,7 +45,6 @@ public class King extends Piece {
 
         for (int i = 0; i < 8; i++) {
             Pair<Integer, Integer> field = kingIterator.next();
-            System.out.println(field);
             int a = field.getKey(), b = field.getValue();
             if (board.inBoardRange(a, b) && board.isEmpty(a, b))
                 f1.apply(field);

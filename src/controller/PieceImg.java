@@ -28,7 +28,6 @@ public class PieceImg extends ImageView {
     }
 
     public void showReachableAndTakeable() {
-        piece.updatePositions();
         for (Pair<Integer, Integer> pos : piece.reachablePositions) {
             int x = pos.getKey(), y = pos.getValue();
             gameController.tiles[x][y].makeReachable();

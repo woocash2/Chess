@@ -34,7 +34,7 @@ public class GameController {
     Tile[][] tiles;
     ArrayList<PieceImg> pieces = new ArrayList<>();
     PieceImg selectedPiece = null;
-    Piece.team turn = Piece.team.WHITE;
+    Piece.team turn = Piece.team.BLACK;
 
     Rectangle stroke;
     Color strokeColor = Color.BLACK;
@@ -94,6 +94,7 @@ public class GameController {
         }
 
         fillBoard();
+        notifyTurnMade();
     }
 
     public void fillBoard() { // add pieces into chessboard
@@ -130,5 +131,10 @@ public class GameController {
             turn = Piece.team.BLACK;
         else
             turn = Piece.team.WHITE;
+
+        for (PieceImg pieceImg : pieces) {
+            if (pieceImg.piece.color == turn)
+                pieceImg.piece.updatePositions();
+        }
     }
 }

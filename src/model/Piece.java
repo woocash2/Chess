@@ -25,8 +25,7 @@ public abstract class Piece {
     public abstract void updatePositions();
 
     public void move(int nx, int ny) {
-        board.positions[x][y] = '-';
-        board.positions[nx][ny] = onBoard;
+        board.move(x, y, nx, ny);
         x = nx;
         y = ny;
     };
