@@ -54,6 +54,6 @@ public class Rook extends Piece {
     public void updatePositions() {
         reachablePositions.clear();
         takeablePositions.clear();
-        boardIteration(PositionUpdater.addToReachableFunction(this), PositionUpdater.addToTakeableFunction(this) ,board, x, y);
+        boardIteration(PositionUpdater.addToReachableFunction(this), PositionUpdater.addToTakeableFunction(this), board, x, y);
     }
 }

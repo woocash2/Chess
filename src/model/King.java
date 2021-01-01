@@ -1,8 +1,10 @@
 package model;
 
 import javafx.util.Pair;
+import model.utils.PositionUpdater;
 
 import java.util.Iterator;
+import java.util.function.Function;
 
 public class King extends Piece {
     public King(int x, int y, team col, Board board) {
@@ -13,13 +15,7 @@ public class King extends Piece {
             onBoard = 'K';
     }
 
-    @Override
-    public void updatePositions() {
-        reachablePositions.clear();
-        takeablePositions.clear();
-        System.out.println(x);
-        System.out.println(y);
-
+    public static <T, E> void boardIteration(Function<Pair<Integer, Integer>, T> f1, Function<Pair<Integer, Integer>, E> f2, Board board, int x, int y) {
         Iterator<Pair<Integer, Integer>> kingIterator = new Iterator<Pair<Integer, Integer>>() {
             Pair<Integer, Integer> current = new Pair<>(x - 1, y - 1);
 
@@ -52,9 +48,16 @@ public class King extends Piece {
             System.out.println(field);
             int a = field.getKey(), b = field.getValue();
             if (board.inBoardRange(a, b) && board.isEmpty(a, b))
-                reachablePositions.add(field);
-            if (board.inBoardRange(a, b) && board.opponentStaysOn(a, b, color))
-                takeablePositions.add(field);
+                f1.apply(field);
+            if (board.inBoardRange(a, b))
+                f2.apply(field);
         }
+    }
+
+    @Override
+    public void updatePositions() {
+        reachablePositions.clear();
+        takeablePositions.clear();
+        boardIteration(PositionUpdater.addToReachableFunction(this), PositionUpdater.addToTakeableFunction(this), board, x, y);
     }
 }
