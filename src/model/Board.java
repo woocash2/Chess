@@ -42,6 +42,18 @@ public class Board {
         blackKingPos = new Pair<>(0, 4);
     }
 
+    public Board(Board board) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                positions[i][j] = board.positions[i][j];
+                if (positions[i][j] == 'k')
+                    whiteKingPos = new Pair<>(i, j);
+                if (positions[i][j] == 'K')
+                    blackKingPos = new Pair<>(i, j);
+            }
+        }
+    }
+
     public void printBoard() {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
