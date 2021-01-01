@@ -13,40 +13,43 @@ public class King extends Piece {
             onBoard = 'K';
     }
 
-    Iterator<Pair<Integer, Integer>> kingIterator = new Iterator<Pair<Integer, Integer>>() {
-
-        Pair<Integer, Integer> current = new Pair<>(x - 1, y - 1);
-
-        @Override
-        public boolean hasNext() {
-            return true;
-        }
-
-        @Override
-        public Pair<Integer, Integer> next() {
-            int a = current.getKey();
-            int b = current.getValue();
-            b++;
-            if (b > y + 1) {
-                b = y - 1;
-                a++;
-                if (a > x + 1)
-                    a = x - 1;
-            }
-            if (a == x && b == y)
-                b++;
-
-            current = new Pair<>(a, b);
-            return current;
-        }
-    } ;
-
     @Override
     public void updatePositions() {
         reachablePositions.clear();
         takeablePositions.clear();
+        System.out.println(x);
+        System.out.println(y);
+
+        Iterator<Pair<Integer, Integer>> kingIterator = new Iterator<Pair<Integer, Integer>>() {
+            Pair<Integer, Integer> current = new Pair<>(x - 1, y - 1);
+
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public Pair<Integer, Integer> next() {
+                int a = current.getKey();
+                int b = current.getValue();
+                b++;
+                if (b > y + 1) {
+                    b = y - 1;
+                    a++;
+                    if (a > x + 1)
+                        a = x - 1;
+                }
+                if (a == x && b == y)
+                    b++;
+
+                current = new Pair<>(a, b);
+                return current;
+            }
+        };
+
         for (int i = 0; i < 8; i++) {
             Pair<Integer, Integer> field = kingIterator.next();
+            System.out.println(field);
             int a = field.getKey(), b = field.getValue();
             if (board.inBoardRange(a, b) && board.isEmpty(a, b))
                 reachablePositions.add(field);

@@ -41,6 +41,8 @@ public class GameController {
     Color darkColor = Color.DARKCYAN;
     Color lightColor = Color.LIGHTGRAY;
 
+    King whiteKing, blackKing;
+
     @FXML
     GridPane gridPane;
     TilePane tilePane;
@@ -101,8 +103,8 @@ public class GameController {
                     continue;
                 Piece piece;
                 piece = switch (board.get(i, j)) {
-                    case 'k' -> new King(i, j, Piece.team.WHITE, board);
-                    case 'K' -> new King(i, j, Piece.team.BLACK, board);
+                    case 'k' -> whiteKing = new King(i, j, Piece.team.WHITE, board);
+                    case 'K' -> blackKing = new King(i, j, Piece.team.BLACK, board);
                     case 'q' -> new Queen(i, j, Piece.team.WHITE, board);
                     case 'Q' -> new Queen(i, j, Piece.team.BLACK, board);
                     case 'b' -> new Bishop(i, j, Piece.team.WHITE, board);

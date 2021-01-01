@@ -13,9 +13,9 @@ public class Main extends Application {
         stage.setTitle("CHESS");
         stage.setScene(new Scene(mainMenu));
         stage.setMinWidth(1200);
-        stage.setMinHeight(800);
-        stage.setFullScreen(true);
-        stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
+        stage.setMinHeight(900);
+        //stage.setFullScreen(true);
+        //stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
         stage.show();
     }
 
