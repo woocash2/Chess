@@ -139,6 +139,7 @@ public class GameController {
         for (PieceImg pieceImg : pieces) {
             if (pieceImg.piece.color == turn)
                 pieceImg.piece.updatePositions();
+
             if (pieceImg.piece.getClass() == King.class) {
                 if (pieceImg.piece.color == Piece.team.WHITE) {
                     ((King) pieceImg.piece).considerCastling((Rook) whiteRooks.get(0).piece);
@@ -147,6 +148,22 @@ public class GameController {
                 else {
                     ((King) pieceImg.piece).considerCastling((Rook) blackRooks.get(0).piece);
                     ((King) pieceImg.piece).considerCastling((Rook) blackRooks.get(1).piece);
+                }
+            }
+
+            if (pieceImg.piece.getClass() == Pawn.class) {
+                int x = pieceImg.piece.x;
+                int y = pieceImg.piece.y;
+                Piece nextToUs;
+                if (board.inBoardRange(x, y + 1) && tiles[x][y + 1].pieceImg != null) {
+                    nextToUs = tiles[x][y + 1].pieceImg.piece;
+                    if (nextToUs.getClass() == Pawn.class && pieceImg.piece.color != nextToUs.color)
+                        ((Pawn) pieceImg.piece).considerEnPassant((Pawn) nextToUs);
+                }
+                if (board.inBoardRange(x, y - 1) && tiles[x][y - 1].pieceImg != null) {
+                    nextToUs = tiles[x][y - 1].pieceImg.piece;
+                    if (nextToUs.getClass() == Pawn.class && pieceImg.piece.color != nextToUs.color)
+                        ((Pawn) pieceImg.piece).considerEnPassant((Pawn) nextToUs);
                 }
             }
         }

@@ -4,6 +4,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import model.Board;
+import model.Piece;
 
 public class Tile extends Rectangle {
 
@@ -73,6 +74,19 @@ public class Tile extends Rectangle {
                 }
             }
             else if (selected != null && pieceImg == null && reachable) { // move selected piece to us
+                makeMoveToUs();
+            }
+            else if (selected != null && pieceImg == null && takeable) {  // that can only be en passant
+                Tile tile;
+                if (gameController.selectedPiece.piece.color == Piece.team.WHITE)
+                    tile = gameController.tiles[x + 1][y];
+                else
+                    tile = gameController.tiles[x - 1][y];
+                // decompose en passant into two separate moves
+                tile.pieceImg.die();
+                tile.makeMoveToUs();
+                gameController.notifyTurnMade();
+                gameController.selectedPiece = selected;
                 makeMoveToUs();
             }
         });

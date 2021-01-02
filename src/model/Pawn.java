@@ -7,6 +7,8 @@ import java.util.function.Function;
 
 public class Pawn extends Piece {
 
+    public boolean justMadeFirstMove = false;
+
     public Pawn(int x, int y, team col, Board board) {
         super(x, y, col, board);
         if (col == team.WHITE)
@@ -38,8 +40,24 @@ public class Pawn extends Piece {
 
     @Override
     public void updatePositions() {
+        justMadeFirstMove = false;
         reachablePositions.clear();
         takeablePositions.clear();
         boardIteration(PositionUpdater.addToReachableFunction(this), PositionUpdater.addToTakeableFunction(this), board, x, y, color);
+    }
+
+    @Override
+    public void move(int nx, int ny) {
+        justMadeFirstMove = !moved;
+        super.move(nx, ny);
+    }
+
+    public void considerEnPassant(Pawn pawn) { // assumes enemyPawn next to us
+        if (pawn.justMadeFirstMove) {
+            if (color == team.WHITE && x == 3)
+                takeablePositions.add(new Pair<>(x - 1, pawn.y));
+            if (color == team.BLACK && x == 4)
+                takeablePositions.add(new Pair<>(x + 1, pawn.y));
+        }
     }
 }
