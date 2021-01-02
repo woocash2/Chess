@@ -59,4 +59,26 @@ public class King extends Piece {
         takeablePositions.clear();
         boardIteration(PositionUpdater.addToReachableFunction(this), PositionUpdater.addToTakeableFunction(this), board, x, y);
     }
+
+    public void considerCastling(Rook rook) { // assumes same color rook
+        if (!moved && !rook.moved) {
+            int a = Math.min(y, rook.y);
+            int b = Math.max(y, rook.y);
+
+            for (int i = a + 1; i < b; i++) {
+                if (!board.isEmpty(x, i))
+                    return;
+            }
+
+            for (int i = a; i <= b; i++) {
+                if (board.isAttacked(color, x, i))
+                    return;
+            }
+
+            if (rook.y == 0)
+                reachablePositions.add(new Pair<>(x, y - 2));
+            else
+                reachablePositions.add(new Pair<>(x, y + 2));
+        }
+    }
 }

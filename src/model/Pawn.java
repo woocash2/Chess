@@ -7,8 +7,6 @@ import java.util.function.Function;
 
 public class Pawn extends Piece {
 
-    public boolean moved = false;
-
     public Pawn(int x, int y, team col, Board board) {
         super(x, y, col, board);
         if (col == team.WHITE)

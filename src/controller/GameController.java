@@ -42,6 +42,7 @@ public class GameController {
     Color lightColor = Color.LIGHTGRAY;
 
     King whiteKing, blackKing;
+    ArrayList<PieceImg> whiteRooks = new ArrayList<>(), blackRooks = new ArrayList<>(); // for castling purposes
 
     @FXML
     GridPane gridPane;
@@ -122,6 +123,9 @@ public class GameController {
                 pieces.add(pieceImg);
                 piecesGrid.add(pieceImg, j, i);
                 tiles[i][j].putPieceOn(pieceImg);
+
+                if (pieceImg.piece.onBoard == 'r') whiteRooks.add(pieceImg);
+                if (pieceImg.piece.onBoard == 'R') blackRooks.add(pieceImg);
             }
         }
     }
@@ -135,6 +139,16 @@ public class GameController {
         for (PieceImg pieceImg : pieces) {
             if (pieceImg.piece.color == turn)
                 pieceImg.piece.updatePositions();
+            if (pieceImg.piece.getClass() == King.class) {
+                if (pieceImg.piece.color == Piece.team.WHITE) {
+                    ((King) pieceImg.piece).considerCastling((Rook) whiteRooks.get(0).piece);
+                    ((King) pieceImg.piece).considerCastling((Rook) whiteRooks.get(1).piece);
+                }
+                else {
+                    ((King) pieceImg.piece).considerCastling((Rook) blackRooks.get(0).piece);
+                    ((King) pieceImg.piece).considerCastling((Rook) blackRooks.get(1).piece);
+                }
+            }
         }
     }
 }

@@ -2,6 +2,7 @@ package controller;
 
 import javafx.scene.image.ImageView;
 import javafx.util.Pair;
+import model.King;
 import model.Pawn;
 import model.Piece;
 import model.utils.ImageCropper;
@@ -20,9 +21,19 @@ public class PieceImg extends ImageView {
     }
 
     public void move(int x, int y) {
+        if (piece.getClass() == King.class && Math.abs(piece.y - y) > 1) { // this means castling
+            if (piece.y > y) {
+                gameController.selectedPiece = piece.color == Piece.team.WHITE ? gameController.whiteRooks.get(0) : gameController.blackRooks.get(0);
+                gameController.tiles[x][y + 1].makeMoveToUs();
+            }
+            else {
+                gameController.selectedPiece = piece.color == Piece.team.WHITE ? gameController.whiteRooks.get(1) : gameController.blackRooks.get(1);
+                gameController.tiles[x][y - 1].makeMoveToUs();
+            }
+            gameController.notifyTurnMade();
+        }
+
         piece.move(x, y);
-        if (piece.getClass() == Pawn.class && !((Pawn)piece).moved)
-            ((Pawn)piece).moved = true;
         gameController.piecesGrid.getChildren().remove(this);
         gameController.piecesGrid.add(this, y, x);
     }

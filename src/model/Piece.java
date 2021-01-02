@@ -11,6 +11,7 @@ public abstract class Piece {
     public char onBoard;
     public Board board;
     public int x, y; // position on board
+    public boolean moved = false;
 
     public ArrayList<Pair<Integer, Integer>> reachablePositions = new ArrayList<>();
     public ArrayList<Pair<Integer, Integer>> takeablePositions = new ArrayList<>();
@@ -28,6 +29,7 @@ public abstract class Piece {
         board.move(x, y, nx, ny);
         x = nx;
         y = ny;
+        moved = true;
     };
 
     public team getColor() {
