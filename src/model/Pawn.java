@@ -31,9 +31,9 @@ public class Pawn extends Piece {
         }
 
         if ((color == team.WHITE && x == 6) || (color == team.BLACK && x == 1)) {
-            if (color == team.WHITE && board.inBoardRange(x - 2, y) && board.isEmpty(x - 2, y))
+            if (color == team.WHITE && board.inBoardRange(x - 2, y) && board.isEmpty(x - 2, y) && board.isEmpty(x - 1, y))
                 f1.apply(new Pair<>(x - 2, y));
-            if (color == team.BLACK && board.inBoardRange(x + 2, y) && board.isEmpty(x + 2, y))
+            if (color == team.BLACK && board.inBoardRange(x + 2, y) && board.isEmpty(x + 2, y) && board.isEmpty(x + 1, y))
                 f1.apply(new Pair<>(x + 2, y));
         }
     }

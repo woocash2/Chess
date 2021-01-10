@@ -46,7 +46,7 @@
             <Insets top="100.0" />
          </GridPane.margin>
       </Rectangle>
-      <Label text="00:00" GridPane.halignment="CENTER" GridPane.valignment="TOP" fx:id="blackTime">
+      <Label fx:id="blackTime" text="00:00" GridPane.halignment="CENTER" GridPane.valignment="TOP">
          <GridPane.margin>
             <Insets top="120.0" />
          </GridPane.margin>
@@ -54,7 +54,7 @@
             <Font name="DejaVu Sans Bold" size="50.0" />
          </font>
       </Label>
-      <Label text="00:00" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM" fx:id="whiteTime">
+      <Label fx:id="whiteTime" text="00:00" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
          <GridPane.margin>
             <Insets bottom="120.0" />
          </GridPane.margin>
