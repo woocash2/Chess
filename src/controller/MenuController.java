@@ -32,6 +32,8 @@ public class MenuController {
     @FXML
     private Button backButton;
 
+    public static int chosenTime = 10;
+
     public void choosePlayOpts() {
         playButton.setVisible(false);
         optsButton.setVisible(false);
@@ -59,7 +61,20 @@ public class MenuController {
         stage.close();
     }
 
-    public void launchGame() throws IOException {
+    public void launch15minGame() throws IOException {
+        launchGame(15);
+    }
+
+    public void launch10minGame() throws IOException {
+        launchGame(10);
+    }
+
+    public void launch5minGame() throws IOException {
+        launchGame(5);
+    }
+
+    public void launchGame(int minutes) throws IOException {
+        chosenTime = minutes;
         Stage stage = (Stage) gridPane.getScene().getWindow();
         Parent gameRoot = FXMLLoader.load(getClass().getResource("/view/game.fxml"));
         stage.getScene().setRoot(gameRoot);

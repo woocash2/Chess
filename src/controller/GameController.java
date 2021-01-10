@@ -1,5 +1,6 @@
 package controller;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -46,9 +47,17 @@ public class GameController {
 
     @FXML
     GridPane gridPane;
+    @FXML
     TilePane tilePane;
+    @FXML
     TilePane shadowTiles;
+    @FXML
     GridPane piecesGrid;
+    @FXML
+    Label whiteTime, blackTime;
+
+    private int minutes;
+    private Timer whiteTimer, blackTimer;
 
     @FXML
     public void initialize() {
@@ -96,6 +105,13 @@ public class GameController {
 
         fillBoard();
         notifyTurnMade();
+        minutes = MenuController.chosenTime;
+        whiteTimer = new Timer(minutes, Piece.team.WHITE, whiteTime, this);
+        blackTimer = new Timer(minutes, Piece.team.BLACK, blackTime, this);
+        whiteTimer.setDaemon(true);
+        blackTimer.setDaemon(true);
+        whiteTimer.start();
+        blackTimer.start();
     }
 
     public void fillBoard() { // add pieces into chessboard
@@ -166,6 +182,13 @@ public class GameController {
                         ((Pawn) pieceImg.piece).considerEnPassant((Pawn) nextToUs);
                 }
             }
+        }
+
+        if (whiteTimer != null && blackTimer != null) {
+            Platform.runLater(() -> {
+                whiteTimer.interrupt();
+                blackTimer.interrupt();
+            });
         }
     }
 }

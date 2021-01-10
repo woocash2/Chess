@@ -32,7 +32,7 @@
             <Bloom />
          </effect>
       </Button>
-      <Button fx:id="time5m" mnemonicParsing="false" onAction="#launchGame" prefHeight="120.0" prefWidth="270.0" text="5 MIN" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="1">
+      <Button fx:id="time5m" mnemonicParsing="false" onAction="#launch5minGame" prefHeight="120.0" prefWidth="270.0" text="5 MIN" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="1">
          <font>
             <Font name="DejaVu Sans Bold" size="40.0" />
          </font>
@@ -48,7 +48,7 @@
             <Bloom />
          </effect>
       </Button>
-      <Button fx:id="time10m" mnemonicParsing="false" onAction="#launchGame" prefHeight="120.0" prefWidth="270.0" text="10 MIN" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="2">
+      <Button fx:id="time10m" mnemonicParsing="false" onAction="#launch10minGame" prefHeight="120.0" prefWidth="270.0" text="10 MIN" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="2">
          <font>
             <Font name="DejaVu Sans Bold" size="40.0" />
          </font>
@@ -64,7 +64,7 @@
             <Bloom />
          </effect>
       </Button>
-      <Button fx:id="time15m" mnemonicParsing="false" onAction="#launchGame" prefHeight="120.0" prefWidth="270.0" text="15 MIN" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="3">
+      <Button fx:id="time15m" mnemonicParsing="false" onAction="#launch15minGame" prefHeight="120.0" prefWidth="270.0" text="15 MIN" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="3">
          <font>
             <Font name="DejaVu Sans Bold" size="40.0" />
          </font>
