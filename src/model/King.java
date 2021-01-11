@@ -70,15 +70,20 @@ public class King extends Piece {
                     return;
             }
 
-            for (int i = a; i <= b; i++) {
-                if (board.isAttacked(color, x, i))
-                    return;
-            }
-
-            if (rook.y == 0)
+            if (rook.y == 0) {
+                for (int i = y - 2; i <= y; i++) {
+                    if (board.isAttacked(color, x, i))
+                        return;
+                }
                 reachablePositions.add(new Pair<>(x, y - 2));
-            else
+            }
+            else {
+                for (int i = y; i <= y + 2; i++) {
+                    if (board.isAttacked(color, x, i))
+                        return;
+                }
                 reachablePositions.add(new Pair<>(x, y + 2));
+            }
         }
     }
 }
