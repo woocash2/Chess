@@ -208,6 +208,9 @@ public class GameController {
 
         if (isCheckMated(newTurn))
             endTheGame(Piece.oponnent(newTurn));
+
+        if (isStaleMate(newTurn))
+            endTheGame(null);
     }
 
     public boolean isCheckMated(Piece.team team) {
@@ -216,21 +219,35 @@ public class GameController {
         else king = blackKing;
 
         if (board.isAttacked(team, king.x, king.y)) {
-
-            int possibleMoves = 0;
-            for (PieceImg piece : pieces) {
-                if (piece.piece.color != team)
-                    continue;
-                possibleMoves += piece.piece.reachablePositions.size();
-                possibleMoves += piece.piece.takeablePositions.size();
-                if (piece.piece.reachablePositions.size() != 0 || piece.piece.takeablePositions.size() != 0)
-                    System.out.println(Integer.toString(piece.piece.x) + " " + Integer.toString(piece.piece.y));
-            }
-
-            return possibleMoves == 0;
+            return numberOfPossibleMoves(team) == 0;
         }
 
         return false;
+    }
+
+    public boolean isStaleMate(Piece.team team) {
+        King king;
+        if (team == Piece.team.WHITE) king = whiteKing;
+        else king = blackKing;
+
+        if (board.isAttacked(team, king.x, king.y))
+            return false;
+
+        return numberOfPossibleMoves(team) == 0;
+    }
+
+    public int numberOfPossibleMoves(Piece.team team) {
+        int possibleMoves = 0;
+        for (PieceImg piece : pieces) {
+            if (piece.piece.color != team)
+                continue;
+            possibleMoves += piece.piece.reachablePositions.size();
+            possibleMoves += piece.piece.takeablePositions.size();
+            if (piece.piece.reachablePositions.size() != 0 || piece.piece.takeablePositions.size() != 0)
+                System.out.println(Integer.toString(piece.piece.x) + " " + Integer.toString(piece.piece.y));
+        }
+
+        return possibleMoves;
     }
 
     public void endTheGame(Piece.team winner) {
