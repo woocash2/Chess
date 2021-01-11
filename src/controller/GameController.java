@@ -209,7 +209,7 @@ public class GameController {
         if (isCheckMated(newTurn))
             endTheGame(Piece.oponnent(newTurn));
 
-        if (isStaleMate(newTurn))
+        if (isStaleMate(newTurn) || pieces.size() == 2) // size == 2 means only two kings left
             endTheGame(null);
     }
 
