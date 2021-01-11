@@ -60,6 +60,7 @@ public class PieceImg extends ImageView {
     }
 
     public void die() {
+        gameController.pieces.remove(this);
         gameController.piecesGrid.getChildren().remove(this);
     }
 }

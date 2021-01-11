@@ -14,6 +14,8 @@ public class Timer extends Thread {
     private GameController gameController;
     Piece.team team;
 
+    private boolean stop = false;
+
     public Timer(long m, Piece.team color, Label label, GameController game) {
         mins = m;
         secs = 0;
@@ -46,6 +48,9 @@ public class Timer extends Thread {
             long moment2 = System.currentTimeMillis();
             millisToSecondPass -= moment2 - moment1;
 
+            if (stop)
+                return;
+
             while (millisToSecondPass <= 0) {
                 secs--;
                 if (secs < 0) {
@@ -65,5 +70,9 @@ public class Timer extends Thread {
         else
             newTime += Long.toString(secs);
         return newTime;
+    }
+
+    public void halt() {
+        stop = true;
     }
 }

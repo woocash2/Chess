@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.TilePane;
@@ -62,6 +63,12 @@ public class GameController {
     Label whiteTime, blackTime;
     @FXML
     Rectangle boardCover; // covers the board during pawn promotion
+    @FXML
+    Label resultLabel;
+    @FXML
+    Rectangle resultBox;
+    @FXML
+    Button resultOkButton;
 
     private int minutes;
     private Timer whiteTimer, blackTimer;
@@ -198,5 +205,41 @@ public class GameController {
                 blackTimer.interrupt();
             });
         }
+
+        if (isCheckMated(newTurn)) {
+            if (newTurn == Piece.team.WHITE) endTheGame(Piece.team.BLACK);
+            else endTheGame(Piece.team.WHITE);
+        }
+    }
+
+    public boolean isCheckMated(Piece.team team) {
+        King king;
+        if (team == Piece.team.WHITE) king = whiteKing;
+        else king = blackKing;
+
+        if (board.isAttacked(team, king.x, king.y)) {
+
+            int possibleMoves = 0;
+            for (PieceImg piece : pieces) {
+                if (piece.piece.color != team)
+                    continue;
+                possibleMoves += piece.piece.reachablePositions.size();
+                possibleMoves += piece.piece.takeablePositions.size();
+                if (piece.piece.reachablePositions.size() != 0 || piece.piece.takeablePositions.size() != 0)
+                    System.out.println(Integer.toString(piece.piece.x) + " " + Integer.toString(piece.piece.y));
+            }
+
+            return possibleMoves == 0;
+        }
+
+        return false;
+    }
+
+    public void endTheGame(Piece.team winner) {
+        whiteTimer.halt();
+        blackTimer.halt();
+        GameResult result = new GameResult(resultLabel, resultBox, resultOkButton);
+        result.show(winner);
+        boardCover.setVisible(true); // no more moves available
     }
 }
