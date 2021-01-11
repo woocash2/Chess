@@ -145,4 +145,8 @@ public class Board {
     public boolean isBlackKingAttacked() {
         return isAttacked(Piece.team.BLACK, blackKingPos.getKey(), blackKingPos.getValue());
     }
+
+    public void set(int i, int j, char c) {
+        positions[i][j] = c;
+    }
 }

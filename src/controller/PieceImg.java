@@ -3,7 +3,6 @@ package controller;
 import javafx.scene.image.ImageView;
 import javafx.util.Pair;
 import model.King;
-import model.Pawn;
 import model.Piece;
 import model.utils.ImageCropper;
 

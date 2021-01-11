@@ -17,13 +17,17 @@ public interface ImageCropper {
     }
 
     public static WritableImage getImage(Piece piece) {
+        return getImageByName(piece.onBoard);
+    }
+
+    public static WritableImage getImageByName(char name) {
         int x, y;
-        if (piece.getColor() == Piece.team.WHITE)
+        if (Character.isLowerCase(name)) // this means White
             y = 0;
         else
             y = 1;
 
-        x = switch (Character.toLowerCase(piece.getOnBoard())) {
+        x = switch (Character.toLowerCase(name)) {
             case 'k' -> 0;
             case 'q' -> 1;
             case 'b' -> 2;

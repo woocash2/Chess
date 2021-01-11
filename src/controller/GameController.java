@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.function.Function;
 
 import model.*;
+import model.utils.PieceFactory;
 
 
 public class GameController {
@@ -52,12 +53,20 @@ public class GameController {
     @FXML
     TilePane shadowTiles;
     @FXML
+    TilePane promotionPane;
+    @FXML
+    Rectangle promotionBack;
+    @FXML
     GridPane piecesGrid;
     @FXML
     Label whiteTime, blackTime;
+    @FXML
+    Rectangle boardCover; // covers the board during pawn promotion
 
     private int minutes;
     private Timer whiteTimer, blackTimer;
+
+    private PromotionPanel promotionPanel;
 
     @FXML
     public void initialize() {
@@ -112,6 +121,8 @@ public class GameController {
         blackTimer.setDaemon(true);
         whiteTimer.start();
         blackTimer.start();
+
+        promotionPanel = new PromotionPanel(promotionPane, promotionBack, boardCover);
     }
 
     public void fillBoard() { // add pieces into chessboard
@@ -119,21 +130,9 @@ public class GameController {
             for (int j = 0; j < 8; j++) {
                 if (board.isEmpty(i, j))
                     continue;
-                Piece piece;
-                piece = switch (board.get(i, j)) {
-                    case 'k' -> whiteKing = new King(i, j, Piece.team.WHITE, board);
-                    case 'K' -> blackKing = new King(i, j, Piece.team.BLACK, board);
-                    case 'q' -> new Queen(i, j, Piece.team.WHITE, board);
-                    case 'Q' -> new Queen(i, j, Piece.team.BLACK, board);
-                    case 'b' -> new Bishop(i, j, Piece.team.WHITE, board);
-                    case 'B' -> new Bishop(i, j, Piece.team.BLACK, board);
-                    case 'r' -> new Rook(i, j, Piece.team.WHITE, board);
-                    case 'R' -> new Rook(i, j, Piece.team.BLACK, board);
-                    case 'n' -> new Knight(i, j, Piece.team.WHITE, board);
-                    case 'N' -> new Knight(i, j, Piece.team.BLACK, board);
-                    case 'p' -> new Pawn(i, j, Piece.team.WHITE, board);
-                    default -> new Pawn(i, j, Piece.team.BLACK, board);
-                };
+                Piece piece = PieceFactory.get(i, j, board);
+                if (piece.onBoard == 'k') whiteKing = (King) piece;
+                if (piece.onBoard == 'K') blackKing = (King) piece;
 
                 PieceImg pieceImg = new PieceImg(piece, this);
                 pieces.add(pieceImg);
@@ -147,13 +146,15 @@ public class GameController {
     }
 
     public void notifyTurnMade() {
+
+        Piece.team newTurn;
         if (turn == Piece.team.WHITE)
-            turn = Piece.team.BLACK;
+            newTurn = Piece.team.BLACK;
         else
-            turn = Piece.team.WHITE;
+            newTurn = Piece.team.WHITE;
 
         for (PieceImg pieceImg : pieces) {
-            if (pieceImg.piece.color == turn)
+            if (pieceImg.piece.color == newTurn)
                 pieceImg.piece.updatePositions();
 
             if (pieceImg.piece.getClass() == King.class) {
@@ -170,6 +171,11 @@ public class GameController {
             if (pieceImg.piece.getClass() == Pawn.class) {
                 int x = pieceImg.piece.x;
                 int y = pieceImg.piece.y;
+                if ((pieceImg.piece.color == Piece.team.WHITE && pieceImg.piece.x == 0) ||
+                        (pieceImg.piece.color == Piece.team.BLACK && pieceImg.piece.x == 7)) {
+                    promotionPanel.show(pieceImg);
+                    return; // so clock is still ticking for promoting player and turn is unchanged.
+                }
                 Piece nextToUs;
                 if (board.inBoardRange(x, y + 1) && tiles[x][y + 1].pieceImg != null) {
                     nextToUs = tiles[x][y + 1].pieceImg.piece;
@@ -183,6 +189,8 @@ public class GameController {
                 }
             }
         }
+
+        turn = newTurn;
 
         if (whiteTimer != null && blackTimer != null) {
             Platform.runLater(() -> {

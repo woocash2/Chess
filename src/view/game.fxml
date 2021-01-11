@@ -62,6 +62,9 @@
             <Font name="DejaVu Sans Bold" size="50.0" />
          </font>
       </Label>
+      <Rectangle fx:id="promotionBack" arcHeight="5.0" arcWidth="5.0" fill="#ced2d7" height="200.0" stroke="TRANSPARENT" strokeType="INSIDE" visible="false" width="200.0" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+      <TilePane fx:id="promotionPane" maxHeight="200.0" maxWidth="200.0" minHeight="200.0" minWidth="200.0" prefColumns="2" prefHeight="200.0" prefRows="2" prefTileHeight="100.0" prefTileWidth="100.0" prefWidth="200.0" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+      <Rectangle fx:id="boardCover" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="900.0" opacity="0.0" stroke="BLACK" strokeType="INSIDE" visible="false" width="900.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
    </children>
    <columnConstraints>
       <ColumnConstraints minWidth="300.0" prefWidth="300.0" />
