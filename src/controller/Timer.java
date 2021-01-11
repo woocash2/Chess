@@ -57,8 +57,14 @@ public class Timer extends Thread {
                     mins--;
                     secs = 59;
                 }
+
                 Platform.runLater(() -> time.setText(makeNewTime()));
                 millisToSecondPass += 1000;
+
+                if (mins == 0 && secs == 0) {
+                    Platform.runLater(() -> gameController.endTheGame(Piece.oponnent(team)));
+                    return;
+                }
             }
         }
     }

@@ -206,10 +206,8 @@ public class GameController {
             });
         }
 
-        if (isCheckMated(newTurn)) {
-            if (newTurn == Piece.team.WHITE) endTheGame(Piece.team.BLACK);
-            else endTheGame(Piece.team.WHITE);
-        }
+        if (isCheckMated(newTurn))
+            endTheGame(Piece.oponnent(newTurn));
     }
 
     public boolean isCheckMated(Piece.team team) {

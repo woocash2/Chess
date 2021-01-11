@@ -7,6 +7,11 @@ import java.util.function.Function;
 
 public abstract class Piece {
     public enum team{WHITE, BLACK};
+    public static team oponnent(team t) {
+        if (t == team.WHITE) return team.BLACK;
+        else return team.WHITE;
+    }
+
     public team color;
     public char onBoard;
     public Board board;

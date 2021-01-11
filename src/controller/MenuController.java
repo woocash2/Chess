@@ -70,7 +70,7 @@ public class MenuController {
     }
 
     public void launch5minGame() throws IOException {
-        launchGame(5);
+        launchGame(1);
     }
 
     public void launchGame(int minutes) throws IOException {
