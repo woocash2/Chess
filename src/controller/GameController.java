@@ -2,8 +2,10 @@ package controller;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
@@ -12,9 +14,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.function.Function;
 
+import javafx.stage.Stage;
 import model.*;
 import model.utils.PieceFactory;
 
@@ -256,5 +260,13 @@ public class GameController {
         GameResult result = new GameResult(resultLabel, resultBox, resultOkButton);
         result.show(winner);
         boardCover.setVisible(true); // no more moves available
+    }
+
+    public void backToMenu() throws IOException {
+        whiteTimer.halt();
+        blackTimer.halt();
+        Stage stage = (Stage) gridPane.getScene().getWindow();
+        Parent gameRoot = FXMLLoader.load(getClass().getResource("/view/menu.fxml"));
+        stage.getScene().setRoot(gameRoot);
     }
 }

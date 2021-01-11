@@ -87,6 +87,14 @@
             <Font name="DejaVu Sans Bold" size="30.0" />
          </font>
       </Button>
+      <Button alignment="CENTER" maxHeight="50.0" maxWidth="100.0" minHeight="50.0" minWidth="100.0" mnemonicParsing="false" onAction="#backToMenu" prefHeight="50.0" prefWidth="244.0" style="-fx-background-color: red;" text="MENU" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
+         <font>
+            <Font name="DejaVu Sans Bold" size="20.0" />
+         </font>
+         <GridPane.margin>
+            <Insets top="50.0" />
+         </GridPane.margin>
+      </Button>
    </children>
    <columnConstraints>
       <ColumnConstraints minWidth="300.0" prefWidth="300.0" />
