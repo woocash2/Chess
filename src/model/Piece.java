@@ -3,7 +3,6 @@ package model;
 import javafx.util.Pair;
 
 import java.util.ArrayList;
-import java.util.function.Function;
 
 public abstract class Piece {
     public enum team{WHITE, BLACK};

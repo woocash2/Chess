@@ -7,8 +7,6 @@ import model.Piece;
 import model.utils.ImageCropper;
 import model.utils.PieceFactory;
 
-import java.util.function.Supplier;
-
 public class PromotionPanel {
 
     private final TilePane promotionPane;

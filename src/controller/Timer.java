@@ -4,8 +4,6 @@ import javafx.application.Platform;
 import javafx.scene.control.Label;
 import model.Piece;
 
-import java.sql.Timestamp;
-
 public class Timer extends Thread {
 
     private long mins, secs;

@@ -43,7 +43,6 @@ public class GameController {
     PieceImg selectedPiece = null;
     Piece.team turn = Piece.team.BLACK;
 
-    Rectangle stroke;
     Color strokeColor = Color.BLACK;
     Color darkColor = Color.DARKCYAN;
     Color lightColor = Color.LIGHTGRAY;
@@ -51,6 +50,8 @@ public class GameController {
     King whiteKing, blackKing;
     ArrayList<PieceImg> whiteRooks = new ArrayList<>(), blackRooks = new ArrayList<>(); // for castling purposes
 
+    @FXML
+    Rectangle stroke;
     @FXML
     GridPane gridPane;
     @FXML
@@ -82,12 +83,8 @@ public class GameController {
     @FXML
     public void initialize() {
         darkColor = MenuController.darkTileColor;
-        stroke = (Rectangle) gridPane.getChildren().get(0); // according to game.fxml
         stroke.setFill(strokeColor);
         stroke.setStroke(strokeColor);
-        tilePane = (TilePane) gridPane.getChildren().get(1); // according to game.fxml
-        shadowTiles = (TilePane) gridPane.getChildren().get(2); // according to game.fxml
-        piecesGrid = (GridPane) gridPane.getChildren().get(3); // according to game.fxml
 
         shadowTiles.setMouseTransparent(true);
         piecesGrid.setMouseTransparent(true);
