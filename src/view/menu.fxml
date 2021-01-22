@@ -8,6 +8,7 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
 <GridPane fx:id="gridPane" alignment="center" minHeight="600.0" minWidth="600.0" prefHeight="800.0" prefWidth="1200.0" vgap="10.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MenuController">
@@ -32,7 +33,7 @@
             <Bloom />
          </effect>
       </Button>
-      <Button fx:id="time5m" mnemonicParsing="false" onAction="#launch5minGame" prefHeight="120.0" prefWidth="270.0" text="5 MIN" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="1">
+      <Button fx:id="time5m" mnemonicParsing="false" onAction="#launch10minGame" prefHeight="120.0" prefWidth="270.0" text="10 MIN" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="1">
          <font>
             <Font name="DejaVu Sans Bold" size="40.0" />
          </font>
@@ -40,7 +41,7 @@
             <Bloom />
          </effect>
       </Button>
-      <Button fx:id="optsButton" mnemonicParsing="false" prefHeight="120.0" prefWidth="270.0" text="OPTIONS" GridPane.columnIndex="1" GridPane.rowIndex="2">
+      <Button fx:id="optsButton" mnemonicParsing="false" onAction="#goToOptions" prefHeight="120.0" prefWidth="270.0" text="OPTIONS" GridPane.columnIndex="1" GridPane.rowIndex="2">
          <font>
             <Font name="DejaVu Sans Bold" size="40.0" />
          </font>
@@ -48,7 +49,7 @@
             <Bloom />
          </effect>
       </Button>
-      <Button fx:id="time10m" mnemonicParsing="false" onAction="#launch10minGame" prefHeight="120.0" prefWidth="270.0" text="10 MIN" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="2">
+      <Button fx:id="time10m" mnemonicParsing="false" onAction="#launch20minGame" prefHeight="120.0" prefWidth="270.0" text="20 MIN" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="2">
          <font>
             <Font name="DejaVu Sans Bold" size="40.0" />
          </font>
@@ -64,7 +65,7 @@
             <Bloom />
          </effect>
       </Button>
-      <Button fx:id="time15m" mnemonicParsing="false" onAction="#launch15minGame" prefHeight="120.0" prefWidth="270.0" text="15 MIN" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="3">
+      <Button fx:id="time15m" mnemonicParsing="false" onAction="#launchNoLimitGame" prefHeight="120.0" prefWidth="270.0" text="NO LIMIT" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="3">
          <font>
             <Font name="DejaVu Sans Bold" size="40.0" />
          </font>
@@ -83,7 +84,7 @@
             <Insets bottom="20.0" />
          </GridPane.margin>
       </Label>
-      <Button fx:id="backButton" maxHeight="120.0" maxWidth="270.0" minHeight="120.0" minWidth="270.0" mnemonicParsing="false" onAction="#backToMenu" prefHeight="120.0" prefWidth="270.0" text="BACK" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="4">
+      <Button fx:id="backButton" maxHeight="120.0" maxWidth="270.0" minHeight="120.0" minWidth="270.0" mnemonicParsing="false" onAction="#backFromPlay" prefHeight="120.0" prefWidth="270.0" text="BACK" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="4">
          <font>
             <Font name="DejaVu Sans Bold" size="40.0" />
          </font>
@@ -91,5 +92,13 @@
             <Bloom />
          </effect>
       </Button>
+      <Label fx:id="styleLabel" prefHeight="36.0" prefWidth="250.0" text="CHOOSE BOARD STYLE" visible="false" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+      <Rectangle fx:id="darkCyan" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="100.0" stroke="BLACK" strokeType="INSIDE" visible="false" width="100.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+      <Rectangle fx:id="darkRed" arcHeight="5.0" arcWidth="5.0" fill="#b93434" height="100.0" stroke="BLACK" strokeType="INSIDE" visible="false" width="100.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+      <Rectangle fx:id="darkGray" arcHeight="5.0" arcWidth="5.0" fill="#837e7e" height="100.0" stroke="BLACK" strokeType="INSIDE" visible="false" width="100.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
    </children>
 </GridPane>

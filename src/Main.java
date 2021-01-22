@@ -14,8 +14,8 @@ public class Main extends Application {
         stage.setScene(new Scene(mainMenu));
         stage.setMinWidth(1200);
         stage.setMinHeight(900);
-        //stage.setFullScreen(true);
-        //stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
+        stage.setFullScreen(true);
+        stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
         stage.show();
     }
 

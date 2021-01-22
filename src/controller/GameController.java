@@ -81,6 +81,7 @@ public class GameController {
 
     @FXML
     public void initialize() {
+        darkColor = MenuController.darkTileColor;
         stroke = (Rectangle) gridPane.getChildren().get(0); // according to game.fxml
         stroke.setFill(strokeColor);
         stroke.setStroke(strokeColor);
@@ -126,13 +127,14 @@ public class GameController {
         fillBoard();
         notifyTurnMade();
         minutes = MenuController.chosenTime;
-        whiteTimer = new Timer(minutes, Piece.team.WHITE, whiteTime, this);
-        blackTimer = new Timer(minutes, Piece.team.BLACK, blackTime, this);
-        whiteTimer.setDaemon(true);
-        blackTimer.setDaemon(true);
-        whiteTimer.start();
-        blackTimer.start();
-
+        if (minutes != 0) {
+            whiteTimer = new Timer(minutes, Piece.team.WHITE, whiteTime, this);
+            blackTimer = new Timer(minutes, Piece.team.BLACK, blackTime, this);
+            whiteTimer.setDaemon(true);
+            blackTimer.setDaemon(true);
+            whiteTimer.start();
+            blackTimer.start();
+        }
         promotionPanel = new PromotionPanel(promotionPane, promotionBack, boardCover);
     }
 
@@ -255,16 +257,20 @@ public class GameController {
     }
 
     public void endTheGame(Piece.team winner) {
-        whiteTimer.halt();
-        blackTimer.halt();
+        if (whiteTimer != null && blackTimer != null) { // can't be just one of them
+            whiteTimer.halt();
+            blackTimer.halt();
+        }
         GameResult result = new GameResult(resultLabel, resultBox, resultOkButton);
         result.show(winner);
         boardCover.setVisible(true); // no more moves available
     }
 
     public void backToMenu() throws IOException {
-        whiteTimer.halt();
-        blackTimer.halt();
+        if (minutes != 0) {
+            whiteTimer.halt();
+            blackTimer.halt();
+        }
         Stage stage = (Stage) gridPane.getScene().getWindow();
         Parent gameRoot = FXMLLoader.load(getClass().getResource("/view/menu.fxml"));
         stage.getScene().setRoot(gameRoot);
