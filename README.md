@@ -1,6 +1,10 @@
-#Chess
+# Chess
 A desktop application for playing chess locally for two players.
-###Running
+
+### Frameworks
+Java, JavaFX
+
+### Running
 In the project root directory run
 ```
 ./build.sh
