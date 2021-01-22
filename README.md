@@ -14,3 +14,5 @@ or just
 ```
 ./gradlew run
 ```
+
+![](image/board.png)
