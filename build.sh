@@ -1,2 +1,2 @@
 #!/bin/bash
-echo built
+./gradlew build
