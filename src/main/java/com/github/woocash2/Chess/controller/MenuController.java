@@ -2,9 +2,13 @@ package com.github.woocash2.Chess.controller;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -41,11 +45,11 @@ public class MenuController {
     private Rectangle darkGray;
 
     public static int chosenTime = 10;
-    public static Color darkTileColor = Color.DARKCYAN;
+    public static Color darkTileColor = Color.ROYALBLUE;
 
     @FXML
     public void initialize() {
-        darkCyan.setFill(Color.DARKCYAN);
+        darkCyan.setFill(Color.ROYALBLUE);
         darkRed.setFill(Color.INDIANRED);
         darkGray.setFill(Color.LIGHTSLATEGRAY);
 
@@ -61,6 +65,7 @@ public class MenuController {
             chooseDarkGray();
             backFromOptions();
         });
+        gridPane.setBackground(new Background(new BackgroundFill(Color.DIMGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
     }
 
     public void choosePlayOpts() {
@@ -108,7 +113,7 @@ public class MenuController {
     }
 
     public void chooseDarkCyan() {
-        darkTileColor = Color.DARKCYAN;
+        darkTileColor = Color.ROYALBLUE;
     }
 
     public void chooseDarkRed() {

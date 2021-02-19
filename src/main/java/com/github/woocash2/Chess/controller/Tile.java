@@ -5,11 +5,12 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import com.github.woocash2.Chess.model.Board;
 import com.github.woocash2.Chess.model.Piece;
+import javafx.util.Pair;
 
 public class Tile extends Rectangle {
 
     private final Board board;
-    private final int x, y;
+    public final int x, y;
 
     protected boolean reachable = false;
     protected boolean takeable = false;
@@ -46,7 +47,7 @@ public class Tile extends Rectangle {
         shadows.getChildren().add(takeShadow);
         shadows.setMouseTransparent(true);
 
-        setOnMouseClicked(e -> {
+        setOnMousePressed(e -> {
             PieceImg selected = gameController.selectedPiece;
 
             if (selected == null && pieceImg != null) {
@@ -98,7 +99,7 @@ public class Tile extends Rectangle {
         int b = selected.piece.y;
         selected.hideReachableAndTakeable();
         gameController.tiles[a][b].takePieceFrom();
-        selected.move(x, y);
+        selected.move(this);
         putPieceOn(selected);
         gameController.selectedPiece = null;
         gameController.notifyTurnMade();
@@ -134,5 +135,9 @@ public class Tile extends Rectangle {
 
     public void takePieceFrom() {
         pieceImg = null;
+    }
+
+    Pair<Double, Double> getCenter() {
+        return new Pair<>(y * 100.0, x * 100.0);
     }
 }

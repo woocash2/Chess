@@ -1,12 +1,18 @@
 package com.github.woocash2.Chess.controller;
 
+import javafx.animation.PathTransition;
+import javafx.animation.TranslateTransition;
 import javafx.scene.image.ImageView;
+import javafx.scene.shape.Line;
+import javafx.util.Duration;
 import javafx.util.Pair;
 import com.github.woocash2.Chess.model.King;
 import com.github.woocash2.Chess.model.Piece;
 import com.github.woocash2.Chess.model.utils.ImageCropper;
 
 public class PieceImg extends ImageView {
+
+    private final double transitionTime = 0.25;
 
     protected GameController gameController;
     protected Piece piece;
@@ -19,7 +25,9 @@ public class PieceImg extends ImageView {
         this.gameController = gameController;
     }
 
-    public void move(int x, int y) {
+    public void move(Tile target) {
+        int x = target.x;
+        int y = target.y;
         if (piece.getClass() == King.class && Math.abs(piece.y - y) > 1) { // this means castling
             if (piece.y > y) {
                 gameController.selectedPiece = piece.color == Piece.team.WHITE ? gameController.whiteRooks.get(0) : gameController.blackRooks.get(0);
@@ -32,9 +40,12 @@ public class PieceImg extends ImageView {
             gameController.notifyTurnMade();
         }
 
+        TranslateTransition transition = new TranslateTransition(Duration.millis(200), this);
+        transition.setToX(target.getCenter().getKey() - getX());
+        transition.setToY(target.getCenter().getValue() - getY());
+        transition.play();
+
         piece.move(x, y);
-        gameController.piecesGrid.getChildren().remove(this);
-        gameController.piecesGrid.add(this, y, x);
     }
 
     public void showReachableAndTakeable() {
@@ -61,6 +72,6 @@ public class PieceImg extends ImageView {
 
     public void die() {
         gameController.pieces.remove(this);
-        gameController.piecesGrid.getChildren().remove(this);
+        gameController.piecesAnchor.getChildren().remove(this);
     }
 }

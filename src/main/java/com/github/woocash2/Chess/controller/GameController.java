@@ -8,8 +8,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.TilePane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -51,8 +50,6 @@ public class GameController {
     ArrayList<PieceImg> whiteRooks = new ArrayList<>(), blackRooks = new ArrayList<>(); // for castling purposes
 
     @FXML
-    Rectangle stroke;
-    @FXML
     GridPane gridPane;
     @FXML
     TilePane tilePane;
@@ -63,7 +60,7 @@ public class GameController {
     @FXML
     Rectangle promotionBack;
     @FXML
-    GridPane piecesGrid;
+    AnchorPane piecesAnchor;
     @FXML
     Label whiteTime, blackTime;
     @FXML
@@ -82,12 +79,11 @@ public class GameController {
 
     @FXML
     public void initialize() {
+        gridPane.setBackground(new Background(new BackgroundFill(Color.DIMGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
         darkColor = MenuController.darkTileColor;
-        stroke.setFill(strokeColor);
-        stroke.setStroke(strokeColor);
 
         shadowTiles.setMouseTransparent(true);
-        piecesGrid.setMouseTransparent(true);
+        piecesAnchor.setMouseTransparent(true);
 
         tiles = new Tile[8][8];
         board = new Board();
@@ -146,8 +142,10 @@ public class GameController {
 
                 PieceImg pieceImg = new PieceImg(piece, this);
                 pieces.add(pieceImg);
-                piecesGrid.add(pieceImg, j, i);
+                piecesAnchor.getChildren().add(pieceImg);
                 tiles[i][j].putPieceOn(pieceImg);
+                pieceImg.setX(tiles[i][j].getCenter().getKey());
+                pieceImg.setY(tiles[i][j].getCenter().getValue());
 
                 if (pieceImg.piece.onBoard == 'r') whiteRooks.add(pieceImg);
                 if (pieceImg.piece.onBoard == 'R') blackRooks.add(pieceImg);
