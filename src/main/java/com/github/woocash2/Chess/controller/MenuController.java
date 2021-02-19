@@ -1,39 +1,58 @@
 package com.github.woocash2.Chess.controller;
 
+import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.IOException;
 
 public class MenuController {
 
     @FXML
-    private GridPane gridPane;
+    private AnchorPane anchorPane;
+
     @FXML
-    private Button playButton;
+    private VBox mainVbox;
     @FXML
-    private Button optsButton;
+    private Label playLabel;
     @FXML
-    private Button exitButton;
+    private Label stylesLabel;
     @FXML
-    private Button time5m;
+    private Label exitLabel;
+
     @FXML
-    private Button time10m;
+    private VBox playVbox;
     @FXML
-    private Button time15m;
+    private Label computerLabel;
     @FXML
-    private Button backButton;
+    private Label local2pLabel;
+    @FXML
+    private Label backLabel;
+
+    @FXML
+    private VBox timeVbox;
+    @FXML
+    private Label min5Label;
+    @FXML
+    private Label min10Label;
+    @FXML
+    private Label min20Label;
+    @FXML
+    private Label min40Label;
+    @FXML
+    private Label noLimitLabel;
+    @FXML
+    private Label back1Label;
 
     @FXML
     private Label styleLabel;
@@ -47,53 +66,89 @@ public class MenuController {
     public static int chosenTime = 10;
     public static Color darkTileColor = Color.ROYALBLUE;
 
+    Paint buttonColor;
+    Paint highlightColor = Color.INDIANRED;
+
+    private Label[] labels;
+    private Label[] timeLabels;
+
+    private double vboxX;
+    private double vboxY;
+
+    public void slideVboxIn(VBox box) {
+        TranslateTransition transition = new TranslateTransition(new Duration(300), box);
+        transition.setToX(vboxX - box.getLayoutX());
+        transition.play();
+    }
+
+    public void slideVboxOut(VBox box) {
+        TranslateTransition transition = new TranslateTransition(new Duration(300), box);
+        transition.setToX(-500 - box.getLayoutX());
+        transition.play();
+    }
+
+    public void prepareActions() {
+        playLabel.setOnMouseClicked(e -> {
+            slideVboxOut(mainVbox);
+            slideVboxIn(playVbox);
+        });
+        exitLabel.setOnMouseClicked(e -> {
+            quitApp();
+        });
+        backLabel.setOnMouseClicked(e -> {
+            slideVboxOut(playVbox);
+            slideVboxIn(mainVbox);
+        });
+        back1Label.setOnMouseClicked(e -> {
+            slideVboxOut(timeVbox);
+            slideVboxIn(playVbox);
+        });
+
+        for (Label label : labels) {
+            label.setOnMouseEntered(e -> label.setTextFill(highlightColor));
+            label.setOnMouseExited(e -> label.setTextFill(buttonColor));
+        }
+
+        local2pLabel.setOnMouseClicked(e -> {
+            slideVboxOut(playVbox);
+            slideVboxIn(timeVbox);
+        });
+
+        for (int m = 5, k = 0; m <= 80 && k < 5; m *= 2, k++) {
+            int finalM = m;
+            timeLabels[k].setOnMouseClicked(e -> {
+                try {
+                    launchGame(finalM % 80);
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
+            });
+        }
+    }
+
     @FXML
     public void initialize() {
-        darkCyan.setFill(Color.ROYALBLUE);
-        darkRed.setFill(Color.INDIANRED);
-        darkGray.setFill(Color.LIGHTSLATEGRAY);
 
-        darkCyan.setOnMouseClicked(e -> {
-            chooseDarkCyan();
-            backFromOptions();
-        });
-        darkRed.setOnMouseClicked(e -> {
-            chooseDarkRed();
-            backFromOptions();
-        });
-        darkGray.setOnMouseClicked(e -> {
-            chooseDarkGray();
-            backFromOptions();
-        });
-        gridPane.setBackground(new Background(new BackgroundFill(Color.DIMGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
-    }
+        labels = new Label[] {playLabel, stylesLabel, exitLabel, computerLabel, local2pLabel, backLabel,
+                             min5Label, min10Label, min20Label, min40Label, noLimitLabel, back1Label};
 
-    public void choosePlayOpts() {
-        playButton.setVisible(false);
-        optsButton.setVisible(false);
-        exitButton.setVisible(false);
+        timeLabels = new Label[] {min5Label, min10Label, min20Label, min40Label, noLimitLabel};
 
-        time5m.setVisible(true);
-        time10m.setVisible(true);
-        time15m.setVisible(true);
-        backButton.setVisible(true);
-    }
+        vboxX = mainVbox.getLayoutX();
+        vboxY = mainVbox.getLayoutY();
+        prepareActions();
 
-    public void backFromPlay() {
-        playButton.setVisible(true);
-        optsButton.setVisible(true);
-        exitButton.setVisible(true);
+        mainVbox.setLayoutX(-500);
+        playVbox.setLayoutX(-500);
+        timeVbox.setLayoutX(-500);
+        slideVboxIn(mainVbox);
 
-        time5m.setVisible(false);
-        time10m.setVisible(false);
-        time15m.setVisible(false);
-        backButton.setVisible(false);
+        buttonColor = playLabel.getTextFill();
+        System.out.println(playLabel.getText());
+        anchorPane.setBackground(new Background(new BackgroundFill(Color.DIMGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
     }
 
     public void goToOptions() {
-        playButton.setVisible(false);
-        optsButton.setVisible(false);
-        exitButton.setVisible(false);
 
         styleLabel.setVisible(true);
         darkCyan.setVisible(true);
@@ -102,9 +157,6 @@ public class MenuController {
     }
 
     public void backFromOptions() {
-        playButton.setVisible(true);
-        optsButton.setVisible(true);
-        exitButton.setVisible(true);
 
         styleLabel.setVisible(false);
         darkCyan.setVisible(false);
@@ -125,7 +177,7 @@ public class MenuController {
     }
 
     public void quitApp() {
-        Stage stage = (Stage) gridPane.getScene().getWindow();
+        Stage stage = (Stage) anchorPane.getScene().getWindow();
         stage.close();
     }
 
@@ -143,7 +195,7 @@ public class MenuController {
 
     public void launchGame(int minutes) throws IOException {
         chosenTime = minutes;
-        Stage stage = (Stage) gridPane.getScene().getWindow();
+        Stage stage = (Stage) anchorPane.getScene().getWindow();
         Parent gameRoot = FXMLLoader.load(getClass().getResource("/view/game.fxml"));
         stage.getScene().setRoot(gameRoot);
     }
