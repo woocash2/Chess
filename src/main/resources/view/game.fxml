@@ -32,7 +32,7 @@
                 <Insets top="120.0" />
             </GridPane.margin>
             <font>
-                <Font name="DejaVu Sans Bold" size="50.0" />
+                <Font name="FreeSans" size="50.0" />
             </font>
         </Label>
         <Label fx:id="whiteTime" text="00:00" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
@@ -40,7 +40,7 @@
                 <Insets bottom="120.0" />
             </GridPane.margin>
             <font>
-                <Font name="DejaVu Sans Bold" size="50.0" />
+                <Font name="FreeSans" size="50.0" />
             </font>
         </Label>
         <Rectangle fx:id="promotionBack" arcHeight="5.0" arcWidth="5.0" fill="#ced2d7" height="200.0" stroke="TRANSPARENT" strokeType="INSIDE" visible="false" width="200.0" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
@@ -52,7 +52,7 @@
                 <Insets bottom="100.0" />
             </GridPane.margin>
             <font>
-                <Font name="DejaVu Sans Bold" size="50.0" />
+                <Font name="FreeSans" size="50.0" />
             </font>
         </Label>
         <Button fx:id="resultOkButton" maxHeight="50.0" maxWidth="100.0" minHeight="50.0" minWidth="100.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="100.0" text="OK" visible="false" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
@@ -63,12 +63,12 @@
                 <Bloom />
             </effect>
             <font>
-                <Font name="DejaVu Sans Bold" size="30.0" />
+                <Font name="FreeSans" size="30.0" />
             </font>
         </Button>
         <Button alignment="CENTER" maxHeight="50.0" maxWidth="100.0" minHeight="50.0" minWidth="100.0" mnemonicParsing="false" onAction="#backToMenu" prefHeight="50.0" prefWidth="244.0" style="-fx-background-color: red;" text="MENU" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
             <font>
-                <Font name="DejaVu Sans Bold" size="20.0" />
+                <Font name="FreeSans" size="20.0" />
             </font>
             <GridPane.margin>
                 <Insets top="50.0" />
