@@ -1,20 +1,18 @@
 package com.github.woocash2.Chess.controller;
 
+import javafx.animation.FadeTransition;
+import javafx.animation.SequentialTransition;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.shape.Rectangle;
 import com.github.woocash2.Chess.model.Piece;
+import javafx.util.Duration;
 
 public class GameResult {
-    private Label result;
-    private Rectangle background;
-    private Button okButton;
+    private final Label result;
 
-    public GameResult(Label label, Rectangle rectangle, Button button) {
+    public GameResult(Label label) {
         result = label;
-        background = rectangle;
-        okButton = button;
-        okButton.setOnAction(e -> hide());
     }
 
     public void show(Piece.team winner) {
@@ -25,14 +23,11 @@ public class GameResult {
         if (winner == Piece.team.BLACK)
             result.setText("BLACK WINS");
 
-        background.setVisible(true);
         result.setVisible(true);
-        okButton.setVisible(true);
-    }
-
-    public void hide() {
-        background.setVisible(false);
-        result.setVisible(false);
-        okButton.setVisible(false);
+        FadeTransition transitionIn = new FadeTransition(new Duration(500), result);
+        transitionIn.setFromValue(0.0);
+        transitionIn.setToValue(1.0);
+        transitionIn.play();
+        SequentialTransition seqTransition = new SequentialTransition();
     }
 }

@@ -3,7 +3,6 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.effect.Bloom?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -12,7 +11,7 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<GridPane fx:id="gridPane" alignment="CENTER" maxHeight="1000.0" maxWidth="1400.0" minHeight="1000.0" minWidth="1400.0" prefHeight="1000.0" prefWidth="1400.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.woocash2.Chess.controller.GameController">
+<GridPane fx:id="gridPane" alignment="CENTER" maxHeight="1080.0" maxWidth="1920.0" minHeight="1080.0" minWidth="1920.0" prefHeight="1080.0" prefWidth="1920.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.woocash2.Chess.controller.GameController">
     <children>
         <TilePane fx:id="tilePane" prefColumns="10" prefHeight="1000.0" prefRows="10" prefTileHeight="100.0" prefTileWidth="100.0" prefWidth="1000.0" GridPane.columnIndex="1" />
         <TilePane fx:id="shadowTiles" maxHeight="800.0" maxWidth="800.0" minHeight="800.0" minWidth="800.0" prefColumns="10" prefHeight="800.0" prefRows="10" prefTileHeight="100.0" prefTileWidth="100.0" prefWidth="800.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
@@ -46,26 +45,14 @@
         <Rectangle fx:id="promotionBack" arcHeight="5.0" arcWidth="5.0" fill="#ced2d7" height="200.0" stroke="TRANSPARENT" strokeType="INSIDE" visible="false" width="200.0" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
         <TilePane fx:id="promotionPane" maxHeight="200.0" maxWidth="200.0" minHeight="200.0" minWidth="200.0" prefColumns="2" prefHeight="200.0" prefRows="2" prefTileHeight="100.0" prefTileWidth="100.0" prefWidth="200.0" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
         <Rectangle fx:id="boardCover" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="900.0" opacity="0.0" stroke="BLACK" strokeType="INSIDE" visible="false" width="900.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
-        <Rectangle fx:id="resultBox" arcHeight="5.0" arcWidth="5.0" fill="#ababab" height="220.0" stroke="#3f8f70" strokeType="INSIDE" visible="false" width="420.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
-        <Label fx:id="resultLabel" text="WHITE WINS" visible="false" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+        <Label fx:id="resultLabel" alignment="CENTER" contentDisplay="CENTER" prefWidth="381.0" text="WHITE WINS" textFill="#860202" visible="false" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
             <GridPane.margin>
                 <Insets bottom="100.0" />
             </GridPane.margin>
             <font>
-                <Font name="FreeSans" size="50.0" />
+                <Font name="FreeSans" size="40.0" />
             </font>
         </Label>
-        <Button fx:id="resultOkButton" maxHeight="50.0" maxWidth="100.0" minHeight="50.0" minWidth="100.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="100.0" text="OK" visible="false" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-            <GridPane.margin>
-                <Insets top="50.0" />
-            </GridPane.margin>
-            <effect>
-                <Bloom />
-            </effect>
-            <font>
-                <Font name="FreeSans" size="30.0" />
-            </font>
-        </Button>
         <Button alignment="CENTER" maxHeight="50.0" maxWidth="100.0" minHeight="50.0" minWidth="100.0" mnemonicParsing="false" onAction="#backToMenu" prefHeight="50.0" prefWidth="244.0" style="-fx-background-color: red;" text="MENU" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
             <font>
                 <Font name="FreeSans" size="20.0" />

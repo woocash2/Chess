@@ -73,10 +73,6 @@ public class GameController {
     Rectangle boardCover; // covers the board during pawn promotion
     @FXML
     Label resultLabel;
-    @FXML
-    Rectangle resultBox;
-    @FXML
-    Button resultOkButton;
 
     private int minutes;
     private Timer whiteTimer, blackTimer;
@@ -301,7 +297,7 @@ public class GameController {
             whiteTimer.halt();
             blackTimer.halt();
         }
-        GameResult result = new GameResult(resultLabel, resultBox, resultOkButton);
+        GameResult result = new GameResult(resultLabel);
         result.show(winner);
         boardCover.setVisible(true); // no more moves available
     }
