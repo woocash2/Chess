@@ -55,15 +55,6 @@ public class MenuController {
     @FXML
     private Label back1Label;
 
-    @FXML
-    private Label styleLabel;
-    @FXML
-    private Rectangle darkCyan;
-    @FXML
-    private Rectangle darkRed;
-    @FXML
-    private Rectangle darkGray;
-
     public static int chosenTime = 10;
     public static Color darkTileColor = Color.ROYALBLUE;
 
@@ -150,49 +141,9 @@ public class MenuController {
         sideRect.setFill(Color.rgb(50, 50, 50));
     }
 
-    public void goToOptions() {
-
-        styleLabel.setVisible(true);
-        darkCyan.setVisible(true);
-        darkRed.setVisible(true);
-        darkGray.setVisible(true);
-    }
-
-    public void backFromOptions() {
-
-        styleLabel.setVisible(false);
-        darkCyan.setVisible(false);
-        darkRed.setVisible(false);
-        darkGray.setVisible(false);
-    }
-
-    public void chooseDarkCyan() {
-        darkTileColor = Color.ROYALBLUE;
-    }
-
-    public void chooseDarkRed() {
-        darkTileColor = Color.INDIANRED;
-    }
-
-    public void chooseDarkGray() {
-        darkTileColor = Color.LIGHTSLATEGRAY;
-    }
-
     public void quitApp() {
         Stage stage = (Stage) anchorPane.getScene().getWindow();
         stage.close();
-    }
-
-    public void launchNoLimitGame() throws IOException {
-        launchGame(0);
-    }
-
-    public void launch10minGame() throws IOException {
-        launchGame(10);
-    }
-
-    public void launch20minGame() throws IOException {
-        launchGame(20);
     }
 
     public void launchGame(int minutes) throws IOException {

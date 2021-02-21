@@ -75,6 +75,8 @@ public class GameController {
     Rectangle boardCover; // covers the board during pawn promotion
     @FXML
     Label resultLabel;
+    @FXML
+    Label menuLabel;
 
     private int minutes;
     private Timer whiteTimer, blackTimer;
@@ -88,6 +90,9 @@ public class GameController {
 
         shadowTiles.setMouseTransparent(true);
         piecesAnchor.setMouseTransparent(false);
+        menuLabel.setTextFill(resultLabel.getTextFill());
+        menuLabel.setOnMouseEntered(e -> menuLabel.setTextFill(Color.RED));
+        menuLabel.setOnMouseExited(e -> menuLabel.setTextFill(resultLabel.getTextFill()));
 
         tiles = new Tile[8][8];
         board = new Board();
