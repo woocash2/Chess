@@ -16,17 +16,7 @@
         <TilePane fx:id="tilePane" prefColumns="10" prefHeight="1000.0" prefRows="10" prefTileHeight="100.0" prefTileWidth="100.0" prefWidth="1000.0" GridPane.columnIndex="1" />
         <TilePane fx:id="shadowTiles" maxHeight="800.0" maxWidth="800.0" minHeight="800.0" minWidth="800.0" prefColumns="10" prefHeight="800.0" prefRows="10" prefTileHeight="100.0" prefTileWidth="100.0" prefWidth="800.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
       <AnchorPane fx:id="piecesAnchor" maxHeight="800.0" maxWidth="800.0" minHeight="200.0" minWidth="200.0" prefHeight="800.0" prefWidth="800.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
-        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#ced2d7" height="100.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
-            <GridPane.margin>
-                <Insets bottom="100.0" />
-            </GridPane.margin>
-        </Rectangle>
-        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#ced2d7" height="100.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" GridPane.halignment="CENTER" GridPane.valignment="TOP">
-            <GridPane.margin>
-                <Insets top="100.0" />
-            </GridPane.margin>
-        </Rectangle>
-        <Label fx:id="blackTime" text="00:00" GridPane.halignment="CENTER" GridPane.valignment="TOP">
+        <Label fx:id="blackTime" text="00:00" textFill="WHITE" GridPane.halignment="CENTER" GridPane.valignment="TOP">
             <GridPane.margin>
                 <Insets top="120.0" />
             </GridPane.margin>
@@ -34,7 +24,7 @@
                 <Font name="FreeSans" size="50.0" />
             </font>
         </Label>
-        <Label fx:id="whiteTime" text="00:00" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
+        <Label fx:id="whiteTime" text="00:00" textFill="WHITE" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
             <GridPane.margin>
                 <Insets bottom="120.0" />
             </GridPane.margin>

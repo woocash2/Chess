@@ -71,6 +71,7 @@ public class Tile extends Rectangle {
             else if (takeable) { // take opponent's piece
                 pieceImg.die();
                 makeMoveToUs();
+                gameController.soundPlayer.playCapture();
                 gameController.notifyTurnMade();
             }
             else {
@@ -79,9 +80,11 @@ public class Tile extends Rectangle {
         }
         else if (selected != null && pieceImg == null && reachable) { // move selected piece to us
             makeMoveToUs();
+            gameController.soundPlayer.playMove();
             gameController.notifyTurnMade();
         }
         else if (selected != null && pieceImg == null && takeable) {  // that can only be en passant
+            gameController.soundPlayer.playCapture();
             enPassantTake();
         }
         else if (selected != null) {
@@ -111,6 +114,7 @@ public class Tile extends Rectangle {
                 pieceImg.die();
                 selected.placeInstantly(this);
                 makeMoveToUs();
+                gameController.soundPlayer.playCapture();
                 gameController.notifyTurnMade();
             }
             else
@@ -119,10 +123,12 @@ public class Tile extends Rectangle {
         else if (selected != null && pieceImg == null && reachable) { // move selected piece to us
             selected.placeInstantly(this);
             makeMoveToUs();
+            gameController.soundPlayer.playMove();
             gameController.notifyTurnMade();
         }
         else if (selected != null && pieceImg == null && takeable) {  // that can only be en passant
             selected.placeInstantly(this);
+            gameController.soundPlayer.playCapture();
             enPassantTake();
         }
         else if (selected != null && pieceImg == null) {

@@ -146,8 +146,8 @@ public class MenuController {
 
         buttonColor = playLabel.getTextFill();
         System.out.println(playLabel.getText());
-        anchorPane.setBackground(new Background(new BackgroundFill(Color.rgb(70, 70, 70), CornerRadii.EMPTY, Insets.EMPTY)));
-        sideRect.setFill(Color.rgb(60, 60, 60));
+        anchorPane.setBackground(new Background(new BackgroundFill(Color.rgb(60, 60, 60), CornerRadii.EMPTY, Insets.EMPTY)));
+        sideRect.setFill(Color.rgb(50, 50, 50));
     }
 
     public void goToOptions() {

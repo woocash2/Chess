@@ -12,7 +12,7 @@ repositories {
 }
 
 javafx {
-    modules = ['javafx.base', 'javafx.graphics', 'javafx.controls', 'javafx.fxml']
+    modules = ['javafx.base', 'javafx.graphics', 'javafx.controls', 'javafx.fxml', 'javafx.media']
     version = '14'
 }
 

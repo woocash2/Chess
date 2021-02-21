@@ -55,6 +55,8 @@ public class GameController {
     King whiteKing, blackKing;
     ArrayList<PieceImg> whiteRooks = new ArrayList<>(), blackRooks = new ArrayList<>(); // for castling purposes
 
+    public SoundPlayer soundPlayer = new SoundPlayer();
+
     @FXML
     GridPane gridPane;
     @FXML
@@ -129,6 +131,10 @@ public class GameController {
             blackTimer.setDaemon(true);
             whiteTimer.start();
             blackTimer.start();
+        }
+        else {
+            whiteTime.setVisible(false);
+            blackTime.setVisible(false);
         }
         promotionPanel = new PromotionPanel(promotionPane, promotionBack, boardCover);
 
@@ -300,6 +306,7 @@ public class GameController {
         GameResult result = new GameResult(resultLabel);
         result.show(winner);
         boardCover.setVisible(true); // no more moves available
+        soundPlayer.playNotify();
     }
 
     public void backToMenu() throws IOException {
