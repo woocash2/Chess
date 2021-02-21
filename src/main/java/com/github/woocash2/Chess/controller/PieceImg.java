@@ -48,6 +48,13 @@ public class PieceImg extends ImageView {
         piece.move(x, y);
     }
 
+    public void placeInstantly(Tile tile) {
+        double x = tile.getCenter().getKey();
+        double y = tile.getCenter().getValue();
+        setX(x);
+        setY(y);
+    }
+
     public void showReachableAndTakeable() {
         for (Pair<Integer, Integer> pos : piece.reachablePositions) {
             int x = pos.getKey(), y = pos.getValue();

@@ -1,5 +1,6 @@
 package com.github.woocash2.Chess.controller;
 import javafx.scene.Group;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
@@ -16,7 +17,7 @@ public class Tile extends Rectangle {
     protected boolean takeable = false;
 
     protected Circle reachShadow;
-    protected Rectangle takeShadow;
+    protected Circle takeShadow;
     protected Group shadows;
 
     private final GameController gameController;
@@ -36,7 +37,7 @@ public class Tile extends Rectangle {
         reachShadow.setMouseTransparent(true);
         reachShadow.setVisible(false);
 
-        takeShadow = new Rectangle(90, 90, Color.TRANSPARENT);
+        takeShadow = new Circle(0, 0, 40, Color.TRANSPARENT);
         takeShadow.setStrokeWidth(10);
         takeShadow.setStroke(Color.DARKGRAY);
         takeShadow.setMouseTransparent(true);
@@ -46,51 +47,112 @@ public class Tile extends Rectangle {
         shadows.getChildren().add(reachShadow);
         shadows.getChildren().add(takeShadow);
         shadows.setMouseTransparent(true);
+        setMouseTransparent(true);
+    }
 
-        setOnMousePressed(e -> {
-            PieceImg selected = gameController.selectedPiece;
+    public void mousePressBehavior(MouseEvent e) {
+        PieceImg selected = gameController.selectedPiece;
 
-            if (selected == null && pieceImg != null) {
-                // select our piece
-                if (gameController.turn == pieceImg.piece.color) {
-                    gameController.selectedPiece = pieceImg;
-                    pieceImg.showReachableAndTakeable();
-                }
+        if (selected == null && pieceImg != null) {
+            // select our piece
+            if (gameController.turn == pieceImg.piece.color) {
+                makeSelection(e);
             }
-            else if (selected != null && pieceImg == selected) {
-                // cancel our selection
+        }
+        else if (selected != null && pieceImg == selected) {
+            gameController.repositionSelected(e);
+        }
+        else if (selected != null && pieceImg != null && pieceImg != selected) {
+            // change selection to our piece
+            if (gameController.turn == pieceImg.piece.color) {
                 selected.hideReachableAndTakeable();
-                gameController.selectedPiece = null;
+                makeSelection(e);
             }
-            else if (selected != null && pieceImg != null && pieceImg != selected) {
-                // change selection to our piece
-                if (gameController.turn == pieceImg.piece.color) {
-                    selected.hideReachableAndTakeable();
-                    gameController.selectedPiece = pieceImg;
-                    pieceImg.showReachableAndTakeable();
-                }
-                else if (takeable) { // take opponent's piece
-                    pieceImg.die();
-                    makeMoveToUs();
-                }
-            }
-            else if (selected != null && pieceImg == null && reachable) { // move selected piece to us
+            else if (takeable) { // take opponent's piece
+                pieceImg.die();
                 makeMoveToUs();
             }
-            else if (selected != null && pieceImg == null && takeable) {  // that can only be en passant
-                Tile tile;
-                if (gameController.selectedPiece.piece.color == Piece.team.WHITE)
-                    tile = gameController.tiles[x + 1][y];
-                else
-                    tile = gameController.tiles[x - 1][y];
-                // decompose en passant into two separate moves
-                tile.pieceImg.die();
-                tile.makeMoveToUs();
-                gameController.notifyTurnMade();
-                gameController.selectedPiece = selected;
+            else {
+                deselect();
+            }
+        }
+        else if (selected != null && pieceImg == null && reachable) { // move selected piece to us
+            makeMoveToUs();
+        }
+        else if (selected != null && pieceImg == null && takeable) {  // that can only be en passant
+            enPassantTake();
+        }
+        else if (selected != null) {
+            deselect();
+        }
+    }
+
+    public void mouseReleaseBehavoiur(MouseEvent e) {
+        PieceImg selected = gameController.selectedPiece;
+        if (selected == null)
+            return;
+
+        gameController.releaseCnt++;
+
+        if (selected == pieceImg) {
+            if (gameController.releaseCnt > 1) {
+                gameController.restoreSelectedPosition();
+                deselect();
+                gameController.releaseCnt = 0;
+            }
+            else
+                gameController.restoreSelectedPosition();
+        }
+        else if (selected != null && pieceImg != null && pieceImg != selected) {
+            // change selection to our piece
+            if (takeable) { // take opponent's piece
+                pieceImg.die();
+                selected.placeInstantly(this);
                 makeMoveToUs();
             }
-        });
+            else
+                gameController.restoreSelectedPosition();
+        }
+        else if (selected != null && pieceImg == null && reachable) { // move selected piece to us
+            selected.placeInstantly(this);
+            makeMoveToUs();
+        }
+        else if (selected != null && pieceImg == null && takeable) {  // that can only be en passant
+            selected.placeInstantly(this);
+            enPassantTake();
+        }
+        else if (selected != null && pieceImg == null) {
+            gameController.restoreSelectedPosition();
+        }
+    }
+
+    public void makeSelection(MouseEvent e) {
+        gameController.releaseCnt = 0;
+        gameController.selectedPiece = pieceImg;
+        gameController.selectedOriginX = pieceImg.getX();
+        gameController.selectedOriginY = pieceImg.getY();
+        pieceImg.showReachableAndTakeable();
+        gameController.repositionSelected(e);
+    }
+
+    public void deselect() {
+        gameController.selectedPiece.hideReachableAndTakeable();
+        gameController.selectedPiece = null;
+    }
+
+    public void enPassantTake() {
+        PieceImg selected = gameController.selectedPiece;
+        Tile tile;
+        if (gameController.selectedPiece.piece.color == Piece.team.WHITE)
+            tile = gameController.tiles[x + 1][y];
+        else
+            tile = gameController.tiles[x - 1][y];
+        // decompose en passant into two separate moves
+        tile.pieceImg.die();
+        tile.makeMoveToUs();
+        gameController.notifyTurnMade();
+        gameController.selectedPiece = selected;
+        makeMoveToUs();
     }
 
     public void makeMoveToUs() {

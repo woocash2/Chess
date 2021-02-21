@@ -1,5 +1,6 @@
 package com.github.woocash2.Chess.controller;
 
+import com.github.woocash2.Chess.model.utils.CoordinateProvider;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -8,6 +9,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -20,6 +22,7 @@ import java.util.function.Function;
 import javafx.stage.Stage;
 import com.github.woocash2.Chess.model.*;
 import com.github.woocash2.Chess.model.utils.PieceFactory;
+import javafx.util.Pair;
 
 
 public class GameController {
@@ -39,7 +42,10 @@ public class GameController {
     Board board;
     Tile[][] tiles;
     ArrayList<PieceImg> pieces = new ArrayList<>();
-    PieceImg selectedPiece = null;
+    public PieceImg selectedPiece = null;
+    public double selectedOriginX;
+    public double selectedOriginY;
+    public int releaseCnt = 0;
     Piece.team turn = Piece.team.BLACK;
 
     Color strokeColor = Color.BLACK;
@@ -83,7 +89,7 @@ public class GameController {
         darkColor = MenuController.darkTileColor;
 
         shadowTiles.setMouseTransparent(true);
-        piecesAnchor.setMouseTransparent(true);
+        piecesAnchor.setMouseTransparent(false);
 
         tiles = new Tile[8][8];
         board = new Board();
@@ -129,6 +135,27 @@ public class GameController {
             blackTimer.start();
         }
         promotionPanel = new PromotionPanel(promotionPane, promotionBack, boardCover);
+
+        piecesAnchor.setOnMousePressed(e -> {
+            Pair<Integer, Integer> coords = CoordinateProvider.tileCoordsFromMousePosition(e);
+            int x = coords.getKey();
+            int y = coords.getValue();
+            tiles[x][y].mousePressBehavior(e);
+        });
+
+        piecesAnchor.setOnMouseReleased(e -> {
+            Pair<Integer, Integer> coords = CoordinateProvider.tileCoordsFromMousePosition(e);
+            int x = coords.getKey();
+            int y = coords.getValue();
+            tiles[x][y].mouseReleaseBehavoiur(e);
+        });
+
+        piecesAnchor.setOnMouseDragged(e -> {
+            if (selectedPiece != null) {
+                selectedPiece.setX(e.getX() - 50);
+                selectedPiece.setY(e.getY() - 50);
+            }
+        });
     }
 
     public void fillBoard() { // add pieces into chessboard
@@ -151,6 +178,16 @@ public class GameController {
                 if (pieceImg.piece.onBoard == 'R') blackRooks.add(pieceImg);
             }
         }
+    }
+
+    public void repositionSelected(MouseEvent e) {
+        selectedPiece.setX(e.getX() - 50);
+        selectedPiece.setY(e.getY() - 50);
+    }
+
+    public void restoreSelectedPosition() {
+        selectedPiece.setX(selectedOriginX);
+        selectedPiece.setY(selectedOriginY);
     }
 
     public void notifyTurnMade() {
