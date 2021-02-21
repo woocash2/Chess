@@ -37,7 +37,6 @@ public class PieceImg extends ImageView {
                 gameController.selectedPiece = piece.color == Piece.team.WHITE ? gameController.whiteRooks.get(1) : gameController.blackRooks.get(1);
                 gameController.tiles[x][y - 1].makeMoveToUs();
             }
-            gameController.notifyTurnMade();
         }
 
         TranslateTransition transition = new TranslateTransition(Duration.millis(200), this);
