@@ -43,6 +43,12 @@ public class PieceImg extends ImageView {
         TranslateTransition transition = new TranslateTransition(Duration.millis(200), this);
         transition.setToX(target.getCenter().getKey() - getX());
         transition.setToY(target.getCenter().getValue() - getY());
+        transition.setOnFinished(e -> {
+            setX(getX() + translateXProperty().getValue());
+            setY(getY() + translateYProperty().getValue());
+            translateXProperty().set(0);
+            translateYProperty().set(0);
+        });
         transition.play();
 
         piece.move(x, y);

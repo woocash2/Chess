@@ -71,6 +71,7 @@ public class Tile extends Rectangle {
             else if (takeable) { // take opponent's piece
                 pieceImg.die();
                 makeMoveToUs();
+                gameController.notifyTurnMade();
             }
             else {
                 deselect();
@@ -78,6 +79,7 @@ public class Tile extends Rectangle {
         }
         else if (selected != null && pieceImg == null && reachable) { // move selected piece to us
             makeMoveToUs();
+            gameController.notifyTurnMade();
         }
         else if (selected != null && pieceImg == null && takeable) {  // that can only be en passant
             enPassantTake();
@@ -109,6 +111,7 @@ public class Tile extends Rectangle {
                 pieceImg.die();
                 selected.placeInstantly(this);
                 makeMoveToUs();
+                gameController.notifyTurnMade();
             }
             else
                 gameController.restoreSelectedPosition();
@@ -116,6 +119,7 @@ public class Tile extends Rectangle {
         else if (selected != null && pieceImg == null && reachable) { // move selected piece to us
             selected.placeInstantly(this);
             makeMoveToUs();
+            gameController.notifyTurnMade();
         }
         else if (selected != null && pieceImg == null && takeable) {  // that can only be en passant
             selected.placeInstantly(this);
@@ -132,6 +136,7 @@ public class Tile extends Rectangle {
         gameController.selectedOriginX = pieceImg.getX();
         gameController.selectedOriginY = pieceImg.getY();
         pieceImg.showReachableAndTakeable();
+        gameController.putSelectedOnTop();
         gameController.repositionSelected(e);
     }
 
@@ -149,10 +154,9 @@ public class Tile extends Rectangle {
             tile = gameController.tiles[x - 1][y];
         // decompose en passant into two separate moves
         tile.pieceImg.die();
-        tile.makeMoveToUs();
-        gameController.notifyTurnMade();
         gameController.selectedPiece = selected;
         makeMoveToUs();
+        gameController.notifyTurnMade();
     }
 
     public void makeMoveToUs() {
@@ -164,7 +168,6 @@ public class Tile extends Rectangle {
         selected.move(this);
         putPieceOn(selected);
         gameController.selectedPiece = null;
-        gameController.notifyTurnMade();
     }
 
     public void makeReachable() {

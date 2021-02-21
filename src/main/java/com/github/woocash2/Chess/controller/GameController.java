@@ -147,7 +147,12 @@ public class GameController {
             Pair<Integer, Integer> coords = CoordinateProvider.tileCoordsFromMousePosition(e);
             int x = coords.getKey();
             int y = coords.getValue();
-            tiles[x][y].mouseReleaseBehavoiur(e);
+            if (x < 0 || y < 0 || x > 7 || y > 7) {
+                if (selectedPiece != null)
+                    restoreSelectedPosition();
+            }
+            else
+                tiles[x][y].mouseReleaseBehavoiur(e);
         });
 
         piecesAnchor.setOnMouseDragged(e -> {
@@ -188,6 +193,11 @@ public class GameController {
     public void restoreSelectedPosition() {
         selectedPiece.setX(selectedOriginX);
         selectedPiece.setY(selectedOriginY);
+    }
+
+    public void putSelectedOnTop() {
+        piecesAnchor.getChildren().remove(selectedPiece);
+        piecesAnchor.getChildren().add(selectedPiece);
     }
 
     public void notifyTurnMade() {
