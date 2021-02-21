@@ -45,12 +45,12 @@
         <Rectangle fx:id="promotionBack" arcHeight="5.0" arcWidth="5.0" fill="#ced2d7" height="200.0" stroke="TRANSPARENT" strokeType="INSIDE" visible="false" width="200.0" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
         <TilePane fx:id="promotionPane" maxHeight="200.0" maxWidth="200.0" minHeight="200.0" minWidth="200.0" prefColumns="2" prefHeight="200.0" prefRows="2" prefTileHeight="100.0" prefTileWidth="100.0" prefWidth="200.0" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
         <Rectangle fx:id="boardCover" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="900.0" opacity="0.0" stroke="BLACK" strokeType="INSIDE" visible="false" width="900.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
-        <Label fx:id="resultLabel" alignment="CENTER" contentDisplay="CENTER" prefWidth="381.0" text="WHITE WINS" textFill="#860202" visible="false" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+        <Label fx:id="resultLabel" alignment="CENTER" contentDisplay="CENTER" maxHeight="100.0" maxWidth="400.0" minHeight="100.0" minWidth="400.0" prefHeight="100.0" prefWidth="400.0" text="WHITE WINS" textFill="#c60000" visible="false" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
             <GridPane.margin>
-                <Insets bottom="100.0" />
+                <Insets />
             </GridPane.margin>
             <font>
-                <Font name="FreeSans" size="40.0" />
+                <Font name="FreeSans" size="50.0" />
             </font>
         </Label>
         <Button alignment="CENTER" maxHeight="50.0" maxWidth="100.0" minHeight="50.0" minWidth="100.0" mnemonicParsing="false" onAction="#backToMenu" prefHeight="50.0" prefWidth="244.0" style="-fx-background-color: red;" text="MENU" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.valignment="TOP">

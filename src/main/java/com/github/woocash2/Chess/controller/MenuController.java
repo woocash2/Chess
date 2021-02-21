@@ -5,7 +5,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -20,6 +19,8 @@ public class MenuController {
 
     @FXML
     private AnchorPane anchorPane;
+    @FXML
+    private Rectangle sideRect;
 
     @FXML
     private VBox mainVbox;
@@ -145,7 +146,8 @@ public class MenuController {
 
         buttonColor = playLabel.getTextFill();
         System.out.println(playLabel.getText());
-        anchorPane.setBackground(new Background(new BackgroundFill(Color.DIMGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+        anchorPane.setBackground(new Background(new BackgroundFill(Color.rgb(70, 70, 70), CornerRadii.EMPTY, Insets.EMPTY)));
+        sideRect.setFill(Color.rgb(60, 60, 60));
     }
 
     public void goToOptions() {

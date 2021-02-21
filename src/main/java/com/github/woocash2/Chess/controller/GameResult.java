@@ -13,6 +13,12 @@ public class GameResult {
 
     public GameResult(Label label) {
         result = label;
+        result.setOnMouseClicked(e -> {
+            FadeTransition transitionIn = new FadeTransition(new Duration(200), result);
+            transitionIn.setFromValue(1.0);
+            transitionIn.setToValue(0.0);
+            transitionIn.play();
+        });
     }
 
     public void show(Piece.team winner) {
@@ -24,10 +30,9 @@ public class GameResult {
             result.setText("BLACK WINS");
 
         result.setVisible(true);
-        FadeTransition transitionIn = new FadeTransition(new Duration(500), result);
+        FadeTransition transitionIn = new FadeTransition(new Duration(200), result);
         transitionIn.setFromValue(0.0);
         transitionIn.setToValue(1.0);
         transitionIn.play();
-        SequentialTransition seqTransition = new SequentialTransition();
     }
 }

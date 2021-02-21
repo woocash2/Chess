@@ -81,7 +81,7 @@ public class GameController {
 
     @FXML
     public void initialize() {
-        gridPane.setBackground(new Background(new BackgroundFill(Color.DIMGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+        gridPane.setBackground(new Background(new BackgroundFill(Color.rgb(70, 70, 70), CornerRadii.EMPTY, Insets.EMPTY)));
         darkColor = MenuController.darkTileColor;
 
         shadowTiles.setMouseTransparent(true);
