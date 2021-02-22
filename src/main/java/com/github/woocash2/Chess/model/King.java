@@ -61,7 +61,7 @@ public class King extends Piece {
     }
 
     public void considerCastling(Rook rook) { // assumes same color rook
-        if (!moved && !rook.moved) {
+        if (!moved && rook.alive && !rook.moved) {
             int a = Math.min(y, rook.y);
             int b = Math.max(y, rook.y);
 

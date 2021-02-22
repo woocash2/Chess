@@ -14,11 +14,13 @@ public class PromotionPanel {
     private final Rectangle boardCover;
     private final char[] whitePromotionNames = {'q', 'r', 'b', 'n'};
     private final char[] blackPromotionNames = {'Q', 'R', 'B', 'N'};
+    public GameController gameController;
 
-    public PromotionPanel(TilePane pane, Rectangle back, Rectangle cover) {
-        promotionPane = pane;
-        paneBackground = back;
-        boardCover = cover;
+    public PromotionPanel(GameController controller) {
+        gameController = controller;
+        promotionPane = gameController.promotionPane;
+        paneBackground = gameController.promotionBack;
+        boardCover = gameController.boardCover;
     }
 
     public void show(PieceImg promoPiece) {
@@ -44,12 +46,22 @@ public class PromotionPanel {
                 int y = promoPiece.piece.y;
                 promoPiece.piece = PieceFactory.putOnBoardAndGet(c, x, y, promoPiece.piece.board);
                 promoPiece.setImage(ImageCropper.getImage(promoPiece.piece));
-                promoPiece.gameController.turnManager.updatePositions(promoPiece.gameController.turnManager.turn);
                 hide();
+                gameController.turnManager.notifyTurnMade();
             });
 
             promotionPane.getChildren().add(view);
         }
+    }
+
+    // for computer promotion purposes
+    public void chooseQueen(PieceImg promoPiece) {
+        int x = promoPiece.piece.x;
+        int y = promoPiece.piece.y;
+        char c = promoPiece.piece.color == Piece.team.WHITE ? 'q' : 'Q';
+        promoPiece.piece = PieceFactory.putOnBoardAndGet(c, x, y, promoPiece.piece.board);
+        promoPiece.setImage(ImageCropper.getImage(promoPiece.piece));
+        gameController.turnManager.notifyTurnMade();
     }
 
     public void hide() {

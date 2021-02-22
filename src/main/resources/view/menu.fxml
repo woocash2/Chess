@@ -86,5 +86,29 @@
             </Label>
          </children>
       </VBox>
+      <VBox fx:id="teamVbox" alignment="CENTER" layoutX="120.0" layoutY="220.0" prefHeight="384.0" prefWidth="258.0">
+         <children>
+            <Label fx:id="whiteLabel" alignment="CENTER" prefHeight="83.0" prefWidth="247.0" text="WHITE" textFill="#fcfcfc">
+               <font>
+                  <Font name="FreeSans" size="40.0" />
+               </font>
+            </Label>
+            <Label fx:id="blackLabel" alignment="CENTER" prefHeight="83.0" prefWidth="227.0" text="BLACK" textFill="#fcfcfc">
+               <font>
+                  <Font name="FreeSans" size="40.0" />
+               </font>
+            </Label>
+            <Label fx:id="randomLabel" alignment="CENTER" prefHeight="83.0" prefWidth="227.0" text="RANDOM" textFill="#fcfcfc">
+               <font>
+                  <Font name="FreeSans" size="40.0" />
+               </font>
+            </Label>
+            <Label fx:id="back2Label" alignment="CENTER" prefHeight="83.0" prefWidth="227.0" text="BACK" textFill="#fcfcfc">
+               <font>
+                  <Font name="FreeSans" size="40.0" />
+               </font>
+            </Label>
+         </children>
+      </VBox>
    </children>
 </AnchorPane>

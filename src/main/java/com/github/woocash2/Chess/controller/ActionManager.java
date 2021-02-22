@@ -22,36 +22,40 @@ public class ActionManager {
     public ActionManager(GameController controller) {
         gameController = controller;
         piecesPane = gameController.piecesPane;
-        promotionPanel = new PromotionPanel(gameController.promotionPane, gameController.promotionBack, gameController.boardCover);
+        promotionPanel = new PromotionPanel(gameController);
         setUpPiecesPaneActions();
     }
 
     public void setUpPiecesPaneActions() {
-        piecesPane.setOnMousePressed(e -> {
-            Pair<Integer, Integer> coords = CoordinateProvider.tileCoordsFromMousePosition(e);
-            int x = coords.getKey();
-            int y = coords.getValue();
-            gameController.boardManager.tiles[x][y].mousePressBehavior(e.getX(), e.getY());
-        });
+        piecesPane.setOnMousePressed(e -> piecesAnchorPressBehavior(e.getX(), e.getY()));
+        piecesPane.setOnMouseReleased(e -> piecesAnchorReleaseBehavior(e.getX(), e.getY()));
+        piecesPane.setOnMouseDragged(e -> piecesAnchorDragBehavior(e.getX(), e.getY()));
+    }
 
-        piecesPane.setOnMouseReleased(e -> {
-            Pair<Integer, Integer> coords = CoordinateProvider.tileCoordsFromMousePosition(e);
-            int x = coords.getKey();
-            int y = coords.getValue();
-            if (x < 0 || y < 0 || x > 7 || y > 7) {
-                if (selectedPiece != null)
-                    restoreSelectedPosition();
-            }
-            else
-                gameController.boardManager.tiles[x][y].mouseReleaseBehavoiur(e);
-        });
+    public void piecesAnchorPressBehavior(double a, double b) {
+        Pair<Integer, Integer> coords = CoordinateProvider.tileCoordsFromMousePosition(a, b);
+        int x = coords.getKey();
+        int y = coords.getValue();
+        gameController.boardManager.tiles[x][y].mousePressBehavior(a, b);
+    }
 
-        piecesPane.setOnMouseDragged(e -> {
-            if (selectedPiece != null) {
-                selectedPiece.setX(e.getX() - 50);
-                selectedPiece.setY(e.getY() - 50);
-            }
-        });
+    public void piecesAnchorReleaseBehavior(double a, double b) {
+        Pair<Integer, Integer> coords = CoordinateProvider.tileCoordsFromMousePosition(a, b);
+        int x = coords.getKey();
+        int y = coords.getValue();
+        if (x < 0 || y < 0 || x > 7 || y > 7) {
+            if (selectedPiece != null)
+                restoreSelectedPosition();
+        }
+        else
+            gameController.boardManager.tiles[x][y].mouseReleaseBehavoiur(a, b);
+    }
+
+    public void piecesAnchorDragBehavior(double a, double b) {
+        if (selectedPiece != null) {
+            selectedPiece.setX(a - 50);
+            selectedPiece.setY(b - 50);
+        }
     }
 
     public void repositionSelected(double x, double y) {

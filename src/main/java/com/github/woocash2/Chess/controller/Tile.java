@@ -1,4 +1,5 @@
 package com.github.woocash2.Chess.controller;
+import com.github.woocash2.Chess.model.Pawn;
 import javafx.scene.Group;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -22,8 +23,8 @@ public class Tile extends Rectangle {
     public Color defaultColor;
     public static Color highlightColor = Color.LIGHTBLUE;
 
-    private final GameController gameController;
-    PieceImg pieceImg;
+    public final GameController gameController;
+    public PieceImg pieceImg;
 
     public Tile(Board board, int x, int y, Color color, GameController gameController) {
         super(100, 100, color);
@@ -52,7 +53,7 @@ public class Tile extends Rectangle {
         setMouseTransparent(true);
     }
 
-    public void mousePressBehavior(double x, double y) {
+    public void mousePressBehavior(double a, double b) {
         PieceImg selected = gameController.actionManager.selectedPiece;
 
         // What is the type of the mouse press?
@@ -67,11 +68,11 @@ public class Tile extends Rectangle {
 
         if (onOurNotSelected) {
             deselect();
-            makeSelection(x, y);
-            gameController.actionManager.repositionSelected(x, y);
+            makeSelection(a, b);
+            gameController.actionManager.repositionSelected(a, b);
         }
         else if (onOurSelected) {
-            gameController.actionManager.repositionSelected(x, y);
+            gameController.actionManager.repositionSelected(a, b);
         }
         else if (onTheirNotTakeable || onEmpty) {
             deselect();
@@ -79,21 +80,24 @@ public class Tile extends Rectangle {
         else if (onReachable) { // castling is being handled in PieceImg class
             gameController.soundPlayer.playMove();
             makeMoveToUs();
-            gameController.turnManager.notifyTurnMade();
+            if (!reachedPromotion())
+                gameController.turnManager.notifyTurnMade();
         }
         else if (onTakeableNonEmpty) {
             gameController.soundPlayer.playCapture();
             pieceImg.die();
             makeMoveToUs();
-            gameController.turnManager.notifyTurnMade();
+            if (!reachedPromotion())
+                gameController.turnManager.notifyTurnMade();
         }
         else if (onTakeableEmpty) { // en passant
             gameController.soundPlayer.playCapture();
             enPassantTake();
+            gameController.turnManager.notifyTurnMade();
         }
     }
 
-    public void mouseReleaseBehavoiur(MouseEvent e) {
+    public void mouseReleaseBehavoiur(double x, double y) {
         PieceImg selected = gameController.actionManager.selectedPiece;
         if (selected == null)
             return;
@@ -123,22 +127,25 @@ public class Tile extends Rectangle {
             gameController.actionManager.restoreSelectedPosition();
         }
         else if (onReachable) { // castling is being handled in PieceImg class
+            gameController.soundPlayer.playMove();
             selected.placeInstantly(this);
             makeMoveToUs();
-            gameController.soundPlayer.playMove();
-            gameController.turnManager.notifyTurnMade();
+            if (!reachedPromotion())
+                gameController.turnManager.notifyTurnMade();
         }
         else if (onTakeableNonEmpty) {
             gameController.soundPlayer.playCapture();
             pieceImg.die();
             selected.placeInstantly(this);
             makeMoveToUs();
-            gameController.turnManager.notifyTurnMade();
+            if (!reachedPromotion())
+                gameController.turnManager.notifyTurnMade();
         }
         else if (onTakeableEmpty) { // en passant
             gameController.soundPlayer.playCapture();
             selected.placeInstantly(this);
             enPassantTake();
+            gameController.turnManager.notifyTurnMade();
         }
     }
 
@@ -162,6 +169,21 @@ public class Tile extends Rectangle {
         gameController.actionManager.selectedTile = null;
     }
 
+    public boolean reachedPromotion() {
+        if (pieceImg.piece.getClass() == Pawn.class) {
+            int x = pieceImg.piece.x;
+            int y = pieceImg.piece.y;
+            if ((pieceImg.piece.color == Piece.team.WHITE && pieceImg.piece.x == 0) || (pieceImg.piece.color == Piece.team.BLACK && pieceImg.piece.x == 7)) {
+                if (gameController.turnManager.computerGame && gameController.turnManager.turn != gameController.turnManager.playerTeam)
+                    gameController.actionManager.promotionPanel.chooseQueen(pieceImg);
+                else
+                    gameController.actionManager.promotionPanel.show(pieceImg);
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void enPassantTake() {
         PieceImg selected = gameController.actionManager.selectedPiece;
         Tile tile;
@@ -175,7 +197,6 @@ public class Tile extends Rectangle {
 
         gameController.actionManager.selectedPiece = selected;
         makeMoveToUs();
-        gameController.turnManager.notifyTurnMade();
     }
 
     public void makeMoveToUs() {

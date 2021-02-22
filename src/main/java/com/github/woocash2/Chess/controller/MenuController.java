@@ -1,5 +1,7 @@
 package com.github.woocash2.Chess.controller;
 
+import com.github.woocash2.Chess.model.Piece;
+import com.github.woocash2.Chess.model.utils.TeamRandomizer;
 import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -55,8 +57,20 @@ public class MenuController {
     @FXML
     private Label back1Label;
 
+    @FXML
+    private VBox teamVbox;
+    @FXML
+    private Label whiteLabel;
+    @FXML
+    private Label blackLabel;
+    @FXML
+    private Label randomLabel;
+    @FXML
+    private Label back2Label;
+
     public static int chosenTime = 10;
-    public static Color darkTileColor = Color.ROYALBLUE;
+    public static boolean computerGame = false;
+    public static Piece.team playerTeam = Piece.team.WHITE;
 
     Paint buttonColor;
     Paint highlightColor = Color.INDIANRED;
@@ -80,6 +94,14 @@ public class MenuController {
     }
 
     public void prepareActions() {
+
+        // highlighting
+        for (Label label : labels) {
+            label.setOnMouseEntered(e -> label.setTextFill(highlightColor));
+            label.setOnMouseExited(e -> label.setTextFill(buttonColor));
+        }
+
+        // main menu
         playLabel.setOnMouseClicked(e -> {
             slideVboxOut(mainVbox);
             slideVboxIn(playVbox);
@@ -87,42 +109,60 @@ public class MenuController {
         exitLabel.setOnMouseClicked(e -> {
             quitApp();
         });
+
+        // back from play
         backLabel.setOnMouseClicked(e -> {
             slideVboxOut(playVbox);
             slideVboxIn(mainVbox);
         });
+
+        // local 2p
+        local2pLabel.setOnMouseClicked(e -> {
+            computerGame = false;
+            slideVboxOut(playVbox);
+            slideVboxIn(timeVbox);
+        });
+        for (int m = 5, k = 0; m <= 80 && k < 5; m *= 2, k++) {
+            int finalM = m;
+            timeLabels[k].setOnMouseClicked(e -> {
+                launchGame(finalM % 80);
+            });
+        }
         back1Label.setOnMouseClicked(e -> {
             slideVboxOut(timeVbox);
             slideVboxIn(playVbox);
         });
 
-        for (Label label : labels) {
-            label.setOnMouseEntered(e -> label.setTextFill(highlightColor));
-            label.setOnMouseExited(e -> label.setTextFill(buttonColor));
-        }
-
-        local2pLabel.setOnMouseClicked(e -> {
+        // computer
+        computerLabel.setOnMouseClicked(e -> {
+            computerGame = true;
             slideVboxOut(playVbox);
-            slideVboxIn(timeVbox);
+            slideVboxIn(teamVbox);
         });
-
-        for (int m = 5, k = 0; m <= 80 && k < 5; m *= 2, k++) {
-            int finalM = m;
-            timeLabels[k].setOnMouseClicked(e -> {
-                try {
-                    launchGame(finalM % 80);
-                } catch (IOException ioException) {
-                    ioException.printStackTrace();
-                }
-            });
-        }
+        whiteLabel.setOnMouseClicked(e -> {
+            playerTeam = Piece.team.WHITE;
+            launchGame(0);
+        });
+        blackLabel.setOnMouseClicked(e -> {
+            playerTeam = Piece.team.BLACK;
+            launchGame(0);
+        });
+        randomLabel.setOnMouseClicked(e -> {
+            playerTeam = TeamRandomizer.getRandomTeam();
+            launchGame(0);
+        });
+        back2Label.setOnMouseClicked(e -> {
+            slideVboxOut(teamVbox);
+            slideVboxIn(playVbox);
+        });
     }
 
     @FXML
     public void initialize() {
 
         labels = new Label[] {playLabel, stylesLabel, exitLabel, computerLabel, local2pLabel, backLabel,
-                             min5Label, min10Label, min20Label, min40Label, noLimitLabel, back1Label};
+                             min5Label, min10Label, min20Label, min40Label, noLimitLabel, back1Label,
+                             whiteLabel, blackLabel, randomLabel, back2Label};
 
         timeLabels = new Label[] {min5Label, min10Label, min20Label, min40Label, noLimitLabel};
 
@@ -133,12 +173,12 @@ public class MenuController {
         mainVbox.setLayoutX(-500);
         playVbox.setLayoutX(-500);
         timeVbox.setLayoutX(-500);
+        teamVbox.setLayoutX(-500);
         slideVboxIn(mainVbox);
 
         buttonColor = playLabel.getTextFill();
-        System.out.println(playLabel.getText());
-        anchorPane.setBackground(new Background(new BackgroundFill(Color.rgb(60, 60, 60), CornerRadii.EMPTY, Insets.EMPTY)));
-        sideRect.setFill(Color.rgb(50, 50, 50));
+        anchorPane.setBackground(new Background(new BackgroundFill(Color.rgb(50, 50, 50), CornerRadii.EMPTY, Insets.EMPTY)));
+        sideRect.setFill(Color.rgb(40, 40, 40));
     }
 
     public void quitApp() {
@@ -146,10 +186,15 @@ public class MenuController {
         stage.close();
     }
 
-    public void launchGame(int minutes) throws IOException {
-        chosenTime = minutes;
-        Stage stage = (Stage) anchorPane.getScene().getWindow();
-        Parent gameRoot = FXMLLoader.load(getClass().getResource("/view/game.fxml"));
-        stage.getScene().setRoot(gameRoot);
+    public void launchGame(int minutes) {
+        try {
+            chosenTime = minutes;
+            Stage stage = (Stage) anchorPane.getScene().getWindow();
+            Parent gameRoot = FXMLLoader.load(getClass().getResource("/view/game.fxml"));
+            stage.getScene().setRoot(gameRoot);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

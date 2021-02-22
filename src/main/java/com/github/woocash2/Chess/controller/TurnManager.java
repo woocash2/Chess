@@ -1,9 +1,7 @@
 package com.github.woocash2.Chess.controller;
 
-import com.github.woocash2.Chess.model.King;
-import com.github.woocash2.Chess.model.Pawn;
-import com.github.woocash2.Chess.model.Piece;
-import com.github.woocash2.Chess.model.Rook;
+import com.github.woocash2.Chess.model.*;
+import com.github.woocash2.Chess.model.utils.TeamRandomizer;
 import javafx.application.Platform;
 
 import java.util.ArrayList;
@@ -13,7 +11,7 @@ public class TurnManager {
     public GameController gameController;
 
     // Determines pieces of which color are to make a move.
-    public Piece.team turn = Piece.team.WHITE;
+    public Piece.team turn = Piece.team.BLACK;
 
     // For checking checkmate / stalemate conditions
     public King whiteKing, blackKing;
@@ -24,10 +22,22 @@ public class TurnManager {
 
     public int minutes;
     public Timer whiteTimer, blackTimer;
+    public boolean computerGame;
+    public Piece.team playerTeam;
+
+    public Computer computer;
+    public boolean gameFinished = false;
 
     public TurnManager(GameController controller) {
         gameController = controller;
         minutes = MenuController.chosenTime;
+
+        // computer mode
+        computerGame = MenuController.computerGame;
+        if (computerGame) {
+            playerTeam = MenuController.playerTeam;
+            computer = new Computer(gameController, TeamRandomizer.getOpposite(playerTeam));
+        }
 
         if (minutes != 0) {
             whiteTimer = new Timer(minutes, Piece.team.WHITE, gameController.whiteTime, gameController);
@@ -50,11 +60,11 @@ public class TurnManager {
 
     public void notifyTurnMade() {
 
-        Piece.team newTurn;
-        if (turn == Piece.team.WHITE)
-            newTurn = Piece.team.BLACK;
-        else
-            newTurn = Piece.team.WHITE;
+        Piece.team newTurn = TeamRandomizer.getOpposite(turn);
+
+        // computer game
+        if (computerGame)
+            gameController.boardCover.setVisible(newTurn != playerTeam);
 
         updatePositions(newTurn);
 
@@ -72,6 +82,13 @@ public class TurnManager {
 
         if (isStaleMate(newTurn) || gameController.boardManager.pieces.size() == 2) // size == 2 means only two kings left
             endTheGame(null);
+
+        // computer game
+        if (computerGame && !gameFinished && turn != playerTeam) {
+            Move move = computer.getRandomMove();
+            gameController.actionManager.piecesAnchorPressBehavior(move.fromXScreen(), move.fromYScreen());
+            gameController.actionManager.piecesAnchorPressBehavior(move.toXScreen(), move.toYScreen());
+        }
     }
 
     public void updatePositions(Piece.team newTurn) {
@@ -93,11 +110,7 @@ public class TurnManager {
             if (pieceImg.piece.getClass() == Pawn.class) {
                 int x = pieceImg.piece.x;
                 int y = pieceImg.piece.y;
-                if ((pieceImg.piece.color == Piece.team.WHITE && pieceImg.piece.x == 0) ||
-                        (pieceImg.piece.color == Piece.team.BLACK && pieceImg.piece.x == 7)) {
-                    gameController.actionManager.promotionPanel.show(pieceImg);
-                    return; // so clock is still ticking for promoting player and turn is unchanged.
-                }
+
                 Piece nextToUs;
                 if (gameController.boardManager.board.inBoardRange(x, y + 1) && gameController.boardManager.tiles[x][y + 1].pieceImg != null) {
                     nextToUs = gameController.boardManager.tiles[x][y + 1].pieceImg.piece;
@@ -157,5 +170,6 @@ public class TurnManager {
         result.show(winner);
         gameController.boardCover.setVisible(true); // no more moves available
         gameController.soundPlayer.playNotify();
+        gameFinished = true;
     }
 }

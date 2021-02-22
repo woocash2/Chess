@@ -6,6 +6,7 @@ import com.github.woocash2.Chess.model.Piece;
 import com.github.woocash2.Chess.model.utils.LabelProvider;
 import com.github.woocash2.Chess.model.utils.PieceFactory;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.TilePane;
@@ -21,13 +22,12 @@ public class BoardManager {
     public TilePane tilesPane;
     public TilePane shadowsPane;
 
+    public Board board;
+    public Tile[][] tiles;
+    public ArrayList<PieceImg> pieces = new ArrayList<>();
 
-    Board board;
-    Tile[][] tiles;
-    ArrayList<PieceImg> pieces = new ArrayList<>();
-
-    Color darkColor = Color.ROYALBLUE;
-    Color lightColor = Color.LIGHTGRAY;
+    public Color darkColor = Color.ROYALBLUE;
+    public Color lightColor = Color.LIGHTGRAY;
 
 
     public BoardManager(GameController controller) {
@@ -44,6 +44,12 @@ public class BoardManager {
 
         fillBoardWithTiles();
         fillBoardWithPieces();
+
+        if (gameController.turnManager.computerGame && gameController.turnManager.playerTeam == Piece.team.BLACK)
+            flipTheBoard();
+
+        if (gameController.turnManager.computerGame)
+            gameController.turnManager.computer.addBoard(board);
     }
 
     public void fillBoardWithTiles() {
@@ -99,6 +105,24 @@ public class BoardManager {
                 if (pieceImg.piece.onBoard == 'r') gameController.turnManager.whiteRooks.add(pieceImg);
                 if (pieceImg.piece.onBoard == 'R') gameController.turnManager.blackRooks.add(pieceImg);
             }
+        }
+    }
+
+    public void flipTheBoard() {
+        tilesPane.setScaleY(-1);
+        shadowsPane.setScaleY(-1);
+        piecesPane.setScaleY(-1);
+        for (Node node : tilesPane.getChildren()) {
+            node.setScaleY(-1);
+            if (node.getClass() == Label.class) {
+                if(((Label)node).getAlignment().equals(Pos.BOTTOM_CENTER))
+                    ((Label)node).setAlignment(Pos.TOP_CENTER);
+                else if (((Label)node).getAlignment().equals(Pos.TOP_CENTER))
+                    ((Label)node).setAlignment(Pos.BOTTOM_CENTER);
+            }
+        }
+        for (PieceImg piece : pieces) {
+            piece.setScaleY(-1);
         }
     }
 }

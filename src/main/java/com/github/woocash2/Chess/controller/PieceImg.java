@@ -1,6 +1,7 @@
 package com.github.woocash2.Chess.controller;
 
 import javafx.animation.TranslateTransition;
+import javafx.application.Platform;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 import javafx.util.Pair;
@@ -10,10 +11,8 @@ import com.github.woocash2.Chess.model.utils.ImageCropper;
 
 public class PieceImg extends ImageView {
 
-    private final double transitionTime = 0.25;
-
-    protected GameController gameController;
-    protected Piece piece;
+    public GameController gameController;
+    public Piece piece;
 
     public PieceImg(Piece piece, GameController gameController) {
         super(ImageCropper.getImage(piece));
@@ -46,6 +45,7 @@ public class PieceImg extends ImageView {
             translateXProperty().set(0);
             translateYProperty().set(0);
         });
+
         transition.play();
 
         piece.move(x, y);
@@ -81,6 +81,7 @@ public class PieceImg extends ImageView {
     }
 
     public void die() {
+        piece.alive = false;
         gameController.boardManager.pieces.remove(this);
         gameController.piecesPane.getChildren().remove(this);
     }

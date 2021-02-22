@@ -1,5 +1,6 @@
 package com.github.woocash2.Chess.controller;
 
+import com.github.woocash2.Chess.Main;
 import com.github.woocash2.Chess.model.utils.CoordinateProvider;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -50,12 +51,11 @@ public class GameController {
     public ActionManager actionManager;
 
     // For playing sound effects after each move.
-    public SoundPlayer soundPlayer = new SoundPlayer();
+    public SoundPlayer soundPlayer = Main.soundPlayer;
 
     @FXML
     public void initialize() {
-
-        gridPane.setBackground(new Background(new BackgroundFill(Color.rgb(70, 70, 70), CornerRadii.EMPTY, Insets.EMPTY)));
+        gridPane.setBackground(new Background(new BackgroundFill(Color.rgb(50, 50, 50), CornerRadii.EMPTY, Insets.EMPTY)));
         menuLabel.setTextFill(resultLabel.getTextFill());
         menuLabel.setOnMouseEntered(e -> menuLabel.setTextFill(Color.RED));
         menuLabel.setOnMouseExited(e -> menuLabel.setTextFill(resultLabel.getTextFill()));
@@ -64,7 +64,7 @@ public class GameController {
         boardManager = new BoardManager(this);
         actionManager = new ActionManager(this);
 
-        turnManager.updatePositions(Piece.team.WHITE);
+        turnManager.notifyTurnMade();
         turnManager.runTimers();
     }
 

@@ -1,5 +1,6 @@
 package com.github.woocash2.Chess;
 
+import com.github.woocash2.Chess.controller.SoundPlayer;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -8,6 +9,9 @@ import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
 
 public class Main extends Application {
+
+    // Only one sound player for entire application ensures that there won't be too many clips.
+    public static SoundPlayer soundPlayer = new SoundPlayer();
 
     @Override
     public void start(Stage stage) throws Exception {
