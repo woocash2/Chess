@@ -176,9 +176,9 @@ public class Tile extends Rectangle {
         int a = selected.piece.x;
         int b = selected.piece.y;
         gameController.boardManager.tiles[a][b].takePieceFrom();
-        selected.move(this);
         putPieceOn(selected);
         deselect();
+        selected.move(this);
     }
 
     public void makeReachable() {
