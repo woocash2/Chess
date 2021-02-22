@@ -51,20 +51,20 @@ public class Tile extends Rectangle {
     }
 
     public void mousePressBehavior(MouseEvent e) {
-        PieceImg selected = gameController.selectedPiece;
+        PieceImg selected = gameController.actionManager.selectedPiece;
 
         if (selected == null && pieceImg != null) {
             // select our piece
-            if (gameController.turn == pieceImg.piece.color) {
+            if (gameController.turnManager.turn == pieceImg.piece.color) {
                 makeSelection(e);
             }
         }
         else if (selected != null && pieceImg == selected) {
-            gameController.repositionSelected(e);
+            gameController.actionManager.repositionSelected(e);
         }
         else if (selected != null && pieceImg != null && pieceImg != selected) {
             // change selection to our piece
-            if (gameController.turn == pieceImg.piece.color) {
+            if (gameController.turnManager.turn == pieceImg.piece.color) {
                 selected.hideReachableAndTakeable();
                 makeSelection(e);
             }
@@ -72,7 +72,7 @@ public class Tile extends Rectangle {
                 pieceImg.die();
                 makeMoveToUs();
                 gameController.soundPlayer.playCapture();
-                gameController.notifyTurnMade();
+                gameController.turnManager.notifyTurnMade();
             }
             else {
                 deselect();
@@ -81,7 +81,7 @@ public class Tile extends Rectangle {
         else if (selected != null && pieceImg == null && reachable) { // move selected piece to us
             makeMoveToUs();
             gameController.soundPlayer.playMove();
-            gameController.notifyTurnMade();
+            gameController.turnManager.notifyTurnMade();
         }
         else if (selected != null && pieceImg == null && takeable) {  // that can only be en passant
             gameController.soundPlayer.playCapture();
@@ -93,20 +93,20 @@ public class Tile extends Rectangle {
     }
 
     public void mouseReleaseBehavoiur(MouseEvent e) {
-        PieceImg selected = gameController.selectedPiece;
+        PieceImg selected = gameController.actionManager.selectedPiece;
         if (selected == null)
             return;
 
-        gameController.releaseCnt++;
+        gameController.actionManager.releaseCnt++;
 
         if (selected == pieceImg) {
-            if (gameController.releaseCnt > 1) {
-                gameController.restoreSelectedPosition();
+            if (gameController.actionManager.releaseCnt > 1) {
+                gameController.actionManager.restoreSelectedPosition();
                 deselect();
-                gameController.releaseCnt = 0;
+                gameController.actionManager.releaseCnt = 0;
             }
             else
-                gameController.restoreSelectedPosition();
+                gameController.actionManager.restoreSelectedPosition();
         }
         else if (selected != null && pieceImg != null && pieceImg != selected) {
             // change selection to our piece
@@ -115,16 +115,16 @@ public class Tile extends Rectangle {
                 selected.placeInstantly(this);
                 makeMoveToUs();
                 gameController.soundPlayer.playCapture();
-                gameController.notifyTurnMade();
+                gameController.turnManager.notifyTurnMade();
             }
             else
-                gameController.restoreSelectedPosition();
+                gameController.actionManager.restoreSelectedPosition();
         }
         else if (selected != null && pieceImg == null && reachable) { // move selected piece to us
             selected.placeInstantly(this);
             makeMoveToUs();
             gameController.soundPlayer.playMove();
-            gameController.notifyTurnMade();
+            gameController.turnManager.notifyTurnMade();
         }
         else if (selected != null && pieceImg == null && takeable) {  // that can only be en passant
             selected.placeInstantly(this);
@@ -132,48 +132,48 @@ public class Tile extends Rectangle {
             enPassantTake();
         }
         else if (selected != null && pieceImg == null) {
-            gameController.restoreSelectedPosition();
+            gameController.actionManager.restoreSelectedPosition();
         }
     }
 
     public void makeSelection(MouseEvent e) {
-        gameController.releaseCnt = 0;
-        gameController.selectedPiece = pieceImg;
-        gameController.selectedOriginX = pieceImg.getX();
-        gameController.selectedOriginY = pieceImg.getY();
+        gameController.actionManager.releaseCnt = 0;
+        gameController.actionManager.selectedPiece = pieceImg;
+        gameController.actionManager.selectedOriginX = pieceImg.getX();
+        gameController.actionManager.selectedOriginY = pieceImg.getY();
         pieceImg.showReachableAndTakeable();
-        gameController.putSelectedOnTop();
-        gameController.repositionSelected(e);
+        gameController.actionManager.putSelectedOnTop();
+        gameController.actionManager.repositionSelected(e);
     }
 
     public void deselect() {
-        gameController.selectedPiece.hideReachableAndTakeable();
-        gameController.selectedPiece = null;
+        gameController.actionManager.selectedPiece.hideReachableAndTakeable();
+        gameController.actionManager.selectedPiece = null;
     }
 
     public void enPassantTake() {
-        PieceImg selected = gameController.selectedPiece;
+        PieceImg selected = gameController.actionManager.selectedPiece;
         Tile tile;
-        if (gameController.selectedPiece.piece.color == Piece.team.WHITE)
-            tile = gameController.tiles[x + 1][y];
+        if (gameController.actionManager.selectedPiece.piece.color == Piece.team.WHITE)
+            tile = gameController.boardManager.tiles[x + 1][y];
         else
-            tile = gameController.tiles[x - 1][y];
+            tile = gameController.boardManager.tiles[x - 1][y];
         // decompose en passant into two separate moves
         tile.pieceImg.die();
-        gameController.selectedPiece = selected;
+        gameController.actionManager.selectedPiece = selected;
         makeMoveToUs();
-        gameController.notifyTurnMade();
+        gameController.turnManager.notifyTurnMade();
     }
 
     public void makeMoveToUs() {
-        PieceImg selected = gameController.selectedPiece;
+        PieceImg selected = gameController.actionManager.selectedPiece;
         int a = selected.piece.x;
         int b = selected.piece.y;
         selected.hideReachableAndTakeable();
-        gameController.tiles[a][b].takePieceFrom();
+        gameController.boardManager.tiles[a][b].takePieceFrom();
         selected.move(this);
         putPieceOn(selected);
-        gameController.selectedPiece = null;
+        gameController.actionManager.selectedPiece = null;
     }
 
     public void makeReachable() {
@@ -197,7 +197,7 @@ public class Tile extends Rectangle {
     }
 
     private boolean selectedPieceStandsOn() {
-        return gameController.selectedPiece.piece.x == x && gameController.selectedPiece.piece.y == y;
+        return gameController.actionManager.selectedPiece.piece.x == x && gameController.actionManager.selectedPiece.piece.y == y;
     }
 
     public void putPieceOn(PieceImg img) {

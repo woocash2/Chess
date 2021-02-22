@@ -31,7 +31,7 @@ public class Timer extends Thread {
 
     public synchronized void measureTime() {
         while (true) {
-            if (gameController.turn != team) {
+            if (gameController.turnManager.turn != team) {
                 try {
                     wait();
                 }
@@ -60,7 +60,7 @@ public class Timer extends Thread {
                 millisToSecondPass += 1000;
 
                 if (mins == 0 && secs == 0) {
-                    Platform.runLater(() -> gameController.endTheGame(Piece.oponnent(team)));
+                    Platform.runLater(() -> gameController.turnManager.endTheGame(Piece.oponnent(team)));
                     return;
                 }
             }

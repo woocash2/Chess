@@ -1,9 +1,7 @@
 package com.github.woocash2.Chess.controller;
 
-import javafx.animation.PathTransition;
 import javafx.animation.TranslateTransition;
 import javafx.scene.image.ImageView;
-import javafx.scene.shape.Line;
 import javafx.util.Duration;
 import javafx.util.Pair;
 import com.github.woocash2.Chess.model.King;
@@ -30,12 +28,12 @@ public class PieceImg extends ImageView {
         int y = target.y;
         if (piece.getClass() == King.class && Math.abs(piece.y - y) > 1) { // this means castling
             if (piece.y > y) {
-                gameController.selectedPiece = piece.color == Piece.team.WHITE ? gameController.whiteRooks.get(0) : gameController.blackRooks.get(0);
-                gameController.tiles[x][y + 1].makeMoveToUs();
+                gameController.actionManager.selectedPiece = piece.color == Piece.team.WHITE ? gameController.turnManager.whiteRooks.get(0) : gameController.turnManager.blackRooks.get(0);
+                gameController.boardManager.tiles[x][y + 1].makeMoveToUs();
             }
             else {
-                gameController.selectedPiece = piece.color == Piece.team.WHITE ? gameController.whiteRooks.get(1) : gameController.blackRooks.get(1);
-                gameController.tiles[x][y - 1].makeMoveToUs();
+                gameController.actionManager.selectedPiece = piece.color == Piece.team.WHITE ? gameController.turnManager.whiteRooks.get(1) : gameController.turnManager.blackRooks.get(1);
+                gameController.boardManager.tiles[x][y - 1].makeMoveToUs();
             }
         }
 
@@ -63,27 +61,27 @@ public class PieceImg extends ImageView {
     public void showReachableAndTakeable() {
         for (Pair<Integer, Integer> pos : piece.reachablePositions) {
             int x = pos.getKey(), y = pos.getValue();
-            gameController.tiles[x][y].makeReachable();
+            gameController.boardManager.tiles[x][y].makeReachable();
         }
         for (Pair<Integer, Integer> pos : piece.takeablePositions) {
             int x = pos.getKey(), y = pos.getValue();
-            gameController.tiles[x][y].makeTakeable();
+            gameController.boardManager.tiles[x][y].makeTakeable();
         }
     }
 
     public void hideReachableAndTakeable() {
         for (Pair<Integer, Integer> pos : piece.reachablePositions) {
             int x = pos.getKey(), y = pos.getValue();
-            gameController.tiles[x][y].makeUnreachable();
+            gameController.boardManager.tiles[x][y].makeUnreachable();
         }
         for (Pair<Integer, Integer> pos : piece.takeablePositions) {
             int x = pos.getKey(), y = pos.getValue();
-            gameController.tiles[x][y].makeUnTakeable();
+            gameController.boardManager.tiles[x][y].makeUnTakeable();
         }
     }
 
     public void die() {
-        gameController.pieces.remove(this);
-        gameController.piecesAnchor.getChildren().remove(this);
+        gameController.boardManager.pieces.remove(this);
+        gameController.piecesPane.getChildren().remove(this);
     }
 }

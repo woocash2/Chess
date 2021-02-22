@@ -17,6 +17,9 @@ public class GameResult {
             FadeTransition transitionIn = new FadeTransition(new Duration(200), result);
             transitionIn.setFromValue(1.0);
             transitionIn.setToValue(0.0);
+            transitionIn.setOnFinished(e1 -> {
+                label.setVisible(false);
+            });
             transitionIn.play();
         });
     }
