@@ -31,7 +31,7 @@ public class ActionManager {
             Pair<Integer, Integer> coords = CoordinateProvider.tileCoordsFromMousePosition(e);
             int x = coords.getKey();
             int y = coords.getValue();
-            gameController.boardManager.tiles[x][y].mousePressBehavior(e);
+            gameController.boardManager.tiles[x][y].mousePressBehavior(e.getX(), e.getY());
         });
 
         piecesPane.setOnMouseReleased(e -> {
@@ -54,9 +54,9 @@ public class ActionManager {
         });
     }
 
-    public void repositionSelected(MouseEvent e) {
-        selectedPiece.setX(e.getX() - 50);
-        selectedPiece.setY(e.getY() - 50);
+    public void repositionSelected(double x, double y) {
+        selectedPiece.setX(x - 50);
+        selectedPiece.setY(y - 50);
     }
 
     public void restoreSelectedPosition() {

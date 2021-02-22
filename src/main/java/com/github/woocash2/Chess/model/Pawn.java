@@ -55,9 +55,9 @@ public class Pawn extends Piece {
     public void considerEnPassant(Pawn pawn) { // assumes enemyPawn next to us
         if (pawn.justMadeFirstMove) {
             if (color == team.WHITE && x == 3)
-                takeablePositions.add(new Pair<>(x - 1, pawn.y));
+                PositionUpdater.addToTakeableEnPassantFunction(this, pawn).apply(new Pair<>(x - 1, pawn.y));
             if (color == team.BLACK && x == 4)
-                takeablePositions.add(new Pair<>(x + 1, pawn.y));
+                PositionUpdater.addToTakeableEnPassantFunction(this, pawn).apply(new Pair<>(x + 1, pawn.y));
         }
     }
 }

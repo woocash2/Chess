@@ -149,4 +149,5 @@ public class Board {
     public void set(int i, int j, char c) {
         positions[i][j] = c;
     }
+    public void takeAway(int i, int j) { set(i, j, '-'); }
 }
