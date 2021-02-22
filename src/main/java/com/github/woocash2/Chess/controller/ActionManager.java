@@ -15,6 +15,7 @@ public class ActionManager {
     public int releaseCnt = 0;
 
     public PieceImg selectedPiece = null;
+    public Tile selectedTile = null;
     public double selectedOriginX;
     public double selectedOriginY;
 

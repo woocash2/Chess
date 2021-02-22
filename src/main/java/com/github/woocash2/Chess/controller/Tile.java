@@ -19,9 +19,10 @@ public class Tile extends Rectangle {
     protected Circle reachShadow;
     protected Circle takeShadow;
     protected Group shadows;
+    public Color defaultColor;
+    public static Color highlightColor = Color.LIGHTBLUE;
 
     private final GameController gameController;
-
     PieceImg pieceImg;
 
     public Tile(Board board, int x, int y, Color color, GameController gameController) {
@@ -32,6 +33,7 @@ public class Tile extends Rectangle {
         this.setX(x);
         this.setY(y);
         this.gameController = gameController;
+        this.defaultColor = color;
 
         reachShadow = new Circle(15, Color.DARKGRAY);
         reachShadow.setMouseTransparent(true);
@@ -65,7 +67,7 @@ public class Tile extends Rectangle {
         else if (selected != null && pieceImg != null && pieceImg != selected) {
             // change selection to our piece
             if (gameController.turnManager.turn == pieceImg.piece.color) {
-                selected.hideReachableAndTakeable();
+                deselect();
                 makeSelection(e);
             }
             else if (takeable) { // take opponent's piece
@@ -109,7 +111,6 @@ public class Tile extends Rectangle {
                 gameController.actionManager.restoreSelectedPosition();
         }
         else if (selected != null && pieceImg != null && pieceImg != selected) {
-            // change selection to our piece
             if (takeable) { // take opponent's piece
                 pieceImg.die();
                 selected.placeInstantly(this);
@@ -139,16 +140,21 @@ public class Tile extends Rectangle {
     public void makeSelection(MouseEvent e) {
         gameController.actionManager.releaseCnt = 0;
         gameController.actionManager.selectedPiece = pieceImg;
+        gameController.actionManager.selectedTile = this;
         gameController.actionManager.selectedOriginX = pieceImg.getX();
         gameController.actionManager.selectedOriginY = pieceImg.getY();
         pieceImg.showReachableAndTakeable();
         gameController.actionManager.putSelectedOnTop();
         gameController.actionManager.repositionSelected(e);
+        setFill(highlightColor);
     }
 
     public void deselect() {
         gameController.actionManager.selectedPiece.hideReachableAndTakeable();
+        if (gameController.actionManager.selectedTile != null)
+            gameController.actionManager.selectedTile.setFill(gameController.actionManager.selectedTile.defaultColor);
         gameController.actionManager.selectedPiece = null;
+        gameController.actionManager.selectedTile = null;
     }
 
     public void enPassantTake() {
@@ -169,11 +175,10 @@ public class Tile extends Rectangle {
         PieceImg selected = gameController.actionManager.selectedPiece;
         int a = selected.piece.x;
         int b = selected.piece.y;
-        selected.hideReachableAndTakeable();
         gameController.boardManager.tiles[a][b].takePieceFrom();
         selected.move(this);
         putPieceOn(selected);
-        gameController.actionManager.selectedPiece = null;
+        deselect();
     }
 
     public void makeReachable() {
