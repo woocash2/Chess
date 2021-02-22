@@ -44,7 +44,7 @@ public class PromotionPanel {
                 int y = promoPiece.piece.y;
                 promoPiece.piece = PieceFactory.putOnBoardAndGet(c, x, y, promoPiece.piece.board);
                 promoPiece.setImage(ImageCropper.getImage(promoPiece.piece));
-                promoPiece.gameController.turnManager.notifyTurnMade();
+                promoPiece.gameController.turnManager.updatePositions(promoPiece.gameController.turnManager.turn);
                 hide();
             });
 
