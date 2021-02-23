@@ -32,10 +32,14 @@ public class GameResult {
         if (winner == Piece.team.BLACK)
             result.setText("BLACK WINS");
 
+        result.setOpacity(0.0);
         result.setVisible(true);
         FadeTransition transitionIn = new FadeTransition(new Duration(200), result);
         transitionIn.setFromValue(0.0);
         transitionIn.setToValue(1.0);
+        transitionIn.setOnFinished(e -> {
+            result.setOpacity(1.0);
+        });
         transitionIn.play();
     }
 }

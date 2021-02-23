@@ -65,6 +65,8 @@ public class TurnManager {
         // computer game
         if (computerGame)
             gameController.boardCover.setVisible(newTurn != playerTeam);
+        else
+            gameController.boardCover.setVisible(false);
 
         updatePositions(newTurn);
 
@@ -85,7 +87,7 @@ public class TurnManager {
 
         // computer game
         if (computerGame && !gameFinished && turn != playerTeam) {
-            Move move = computer.getRandomMove();
+            Move move = computer.findMove();
             gameController.actionManager.piecesAnchorPressBehavior(move.fromXScreen(), move.fromYScreen());
             gameController.actionManager.piecesAnchorPressBehavior(move.toXScreen(), move.toYScreen());
         }
@@ -98,12 +100,16 @@ public class TurnManager {
 
             if (pieceImg.piece.getClass() == King.class) {
                 if (pieceImg.piece.color == Piece.team.WHITE) {
-                    ((King) pieceImg.piece).considerCastling((Rook) whiteRooks.get(0).piece);
-                    ((King) pieceImg.piece).considerCastling((Rook) whiteRooks.get(1).piece);
+                    if (whiteRooks.size() > 0)
+                        ((King) pieceImg.piece).considerCastling((Rook) whiteRooks.get(0).piece);
+                    if (whiteRooks.size() > 1)
+                        ((King) pieceImg.piece).considerCastling((Rook) whiteRooks.get(1).piece);
                 }
                 else {
-                    ((King) pieceImg.piece).considerCastling((Rook) blackRooks.get(0).piece);
-                    ((King) pieceImg.piece).considerCastling((Rook) blackRooks.get(1).piece);
+                    if (blackRooks.size() > 0)
+                        ((King) pieceImg.piece).considerCastling((Rook) blackRooks.get(0).piece);
+                    if (blackRooks.size() > 1)
+                        ((King) pieceImg.piece).considerCastling((Rook) blackRooks.get(1).piece);
                 }
             }
 
@@ -131,7 +137,7 @@ public class TurnManager {
         if (team == Piece.team.WHITE) king = whiteKing;
         else king = blackKing;
 
-        if (gameController.boardManager.board.isAttacked(team, king.x, king.y)) {
+        if (gameController.boardManager.board.numOfAttackers(team, king.x, king.y) > 0) {
             return numberOfPossibleMoves(team) == 0;
         }
 
@@ -143,7 +149,7 @@ public class TurnManager {
         if (team == Piece.team.WHITE) king = whiteKing;
         else king = blackKing;
 
-        if (gameController.boardManager.board.isAttacked(team, king.x, king.y))
+        if (gameController.boardManager.board.numOfAttackers(team, king.x, king.y) > 0)
             return false;
 
         return numberOfPossibleMoves(team) == 0;

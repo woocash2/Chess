@@ -72,14 +72,14 @@ public class King extends Piece {
 
             if (rook.y == 0) {
                 for (int i = y - 2; i <= y; i++) {
-                    if (board.isAttacked(color, x, i))
+                    if (board.numOfAttackers(color, x, i) > 0)
                         return;
                 }
                 reachablePositions.add(new Pair<>(x, y - 2));
             }
             else {
                 for (int i = y; i <= y + 2; i++) {
-                    if (board.isAttacked(color, x, i))
+                    if (board.numOfAttackers(color, x, i) > 0)
                         return;
                 }
                 reachablePositions.add(new Pair<>(x, y + 2));

@@ -64,8 +64,8 @@ public class GameController {
         boardManager = new BoardManager(this);
         actionManager = new ActionManager(this);
 
-        turnManager.notifyTurnMade();
         turnManager.runTimers();
+        turnManager.notifyTurnMade();
     }
 
     public void backToMenu() throws IOException {

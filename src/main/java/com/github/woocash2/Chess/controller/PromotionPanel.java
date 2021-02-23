@@ -61,7 +61,6 @@ public class PromotionPanel {
         char c = promoPiece.piece.color == Piece.team.WHITE ? 'q' : 'Q';
         promoPiece.piece = PieceFactory.putOnBoardAndGet(c, x, y, promoPiece.piece.board);
         promoPiece.setImage(ImageCropper.getImage(promoPiece.piece));
-        gameController.turnManager.notifyTurnMade();
     }
 
     public void hide() {

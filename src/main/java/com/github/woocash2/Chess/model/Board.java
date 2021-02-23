@@ -54,6 +54,19 @@ public class Board {
         }
     }
 
+    public Board(char[][] brd) {
+        positions = new char[8][8];
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                positions[i][j] = brd[i][j];
+                if (positions[i][j] == 'k')
+                    whiteKingPos = new Pair<>(i, j);
+                if (positions[i][j] == 'K')
+                    blackKingPos = new Pair<>(i, j);
+            }
+        }
+    }
+
     public void printBoard() {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
@@ -94,7 +107,7 @@ public class Board {
             blackKingPos = new Pair<>(a, b);
     }
 
-    public boolean isAttacked(Piece.team team, int x, int y) { // is the field x, y attacked by a piece from (team)^(-1)
+    public int numOfAttackers(Piece.team team, int x, int y) { // is the field x, y attacked by a piece from (team)^(-1)
         Function<Character, Boolean> isOpponent;
         if (team == Piece.team.WHITE)
             isOpponent = Character::isUpperCase;
@@ -106,17 +119,17 @@ public class Board {
             char c = positions[p.getKey()][p.getValue()];
             return isOpponent.apply(c) && (Character.toLowerCase(c) == 'q' || Character.toLowerCase(c) == 'r') && attackers.add(p);
         }, this, x, y);
-        if (!attackers.isEmpty()) return true;
+
         Bishop.boardIteration(p -> null, p -> {
             char c = positions[p.getKey()][p.getValue()];
             return isOpponent.apply(c) && (Character.toLowerCase(c) == 'q' || Character.toLowerCase(c) == 'b') && attackers.add(p);
         }, this, x, y);
-        if (!attackers.isEmpty()) return true;
+
         Knight.boardIteration(p -> null, p -> {
             char c = positions[p.getKey()][p.getValue()];
             return isOpponent.apply(c) && (Character.toLowerCase(c) == 'n') && attackers.add(p);
         }, this, x, y);
-        if (!attackers.isEmpty()) return true;
+
         King.boardIteration(p -> null, p -> {
             char c = positions[p.getKey()][p.getValue()];
             return isOpponent.apply(c) && (Character.toLowerCase(c) == 'k') && attackers.add(p);
@@ -135,19 +148,94 @@ public class Board {
                 attackers.add(new Pair<>(x + 1, y + 1));
         }
 
-        return !attackers.isEmpty();
+        return attackers.size();
     }
 
     public boolean isWhiteKingAttacked() {
-        return isAttacked(Piece.team.WHITE, whiteKingPos.getKey(), whiteKingPos.getValue());
+        return numOfAttackers(Piece.team.WHITE, whiteKingPos.getKey(), whiteKingPos.getValue()) > 0;
     }
 
     public boolean isBlackKingAttacked() {
-        return isAttacked(Piece.team.BLACK, blackKingPos.getKey(), blackKingPos.getValue());
+        return numOfAttackers(Piece.team.BLACK, blackKingPos.getKey(), blackKingPos.getValue()) > 0;
     }
 
     public void set(int i, int j, char c) {
         positions[i][j] = c;
     }
     public void takeAway(int i, int j) { set(i, j, '-'); }
+
+
+    // starting positions for debugging
+
+    // [OK]
+    public static char[][] whiteToPromote = {
+            {'-', '-', '-', '-', '-', '-', '-', 'K'},
+            {'-', '-', '-', '-', '-', '-', '-', '-'},
+            {'-', '-', '-', '-', '-', '-', '-', '-'},
+            {'-', 'p', '-', '-', '-', '-', '-', '-'},
+            {'-', '-', '-', '-', '-', '-', '-', '-'},
+            {'-', 'k', '-', '-', '-', '-', '-', '-'},
+            {'-', '-', '-', '-', '-', '-', '-', '-'},
+            {'-', '-', '-', '-', '-', '-', '-', '-'}
+    };
+
+    // [OK]
+    public static char[][] whiteMateInTwo1 = {
+            {'-', '-', '-', '-', '-', '-', '-', 'K'},
+            {'-', '-', '-', '-', '-', '-', '-', '-'},
+            {'-', '-', '-', '-', '-', '-', '-', '-'},
+            {'-', 'q', '-', '-', '-', '-', '-', '-'},
+            {'-', '-', '-', '-', '-', '-', '-', '-'},
+            {'-', 'k', '-', '-', '-', '-', '-', '-'},
+            {'-', '-', '-', '-', '-', '-', '-', '-'},
+            {'q', '-', '-', '-', '-', '-', '-', '-'}
+    };
+
+    // [OK]
+    public static char[][] whiteMateInTwo2 = {
+            {'-', '-', '-', '-', '-', 'n', 'N', 'K'},
+            {'-', '-', '-', '-', '-', '-', 'P', '-'},
+            {'-', '-', '-', '-', '-', '-', '-', '-'},
+            {'-', '-', '-', '-', '-', '-', 'N', '-'},
+            {'-', '-', '-', '-', '-', '-', '-', '-'},
+            {'-', 'k', '-', '-', '-', '-', '-', '-'},
+            {'-', '-', '-', '-', '-', '-', '-', '-'},
+            {'-', 'q', '-', '-', '-', '-', '-', '-'}
+    };
+
+    // [FAIL]
+    public static char[][] whiteMateQueenKingEasy = {
+            {'-', '-', '-', '-', '-', '-', '-', 'K'},
+            {'q', '-', '-', '-', '-', '-', '-', '-'},
+            {'-', '-', 'k', '-', '-', '-', '-', '-'},
+            {'-', '-', '-', '-', '-', '-', '-', '-'},
+            {'-', '-', '-', '-', '-', '-', '-', '-'},
+            {'-', '-', '-', '-', '-', '-', '-', '-'},
+            {'-', '-', '-', '-', '-', '-', '-', '-'},
+            {'-', '-', '-', '-', '-', '-', '-', '-'}
+    };
+
+    // [OK]
+    public static char[][] whiteMateInTwo3 = {
+            {'-', '-', '-', '-', '-', '-', 'K', '-'},
+            {'q', '-', '-', '-', '-', '-', '-', '-'},
+            {'-', '-', '-', '-', 'k', '-', '-', '-'},
+            {'-', '-', '-', '-', '-', '-', '-', '-'},
+            {'-', '-', '-', '-', '-', '-', '-', '-'},
+            {'-', '-', '-', '-', '-', '-', '-', '-'},
+            {'-', '-', '-', '-', '-', '-', '-', '-'},
+            {'-', '-', '-', '-', '-', '-', '-', '-'}
+    };
+
+    // [OK]
+    public static char[][] whiteMateInThree1 = {
+            {'-', '-', '-', '-', '-', '-', 'K', '-'},
+            {'r', '-', '-', '-', '-', '-', '-', '-'},
+            {'-', '-', '-', '-', 'k', '-', '-', '-'},
+            {'-', '-', '-', '-', '-', '-', '-', '-'},
+            {'-', '-', '-', '-', '-', '-', '-', '-'},
+            {'-', '-', '-', '-', '-', '-', '-', '-'},
+            {'-', '-', '-', '-', '-', '-', '-', '-'},
+            {'-', '-', '-', '-', '-', '-', '-', '-'}
+    };
 }

@@ -10,11 +10,6 @@ You need to have Java 13 or higher probably. Recommended: Java 15
 ### Running
 In the project root directory run
 ```
-./build.sh
-./run.sh
-```
-or just
-```
 ./gradlew run
 ```
 

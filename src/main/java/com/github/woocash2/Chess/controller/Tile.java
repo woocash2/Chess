@@ -79,16 +79,14 @@ public class Tile extends Rectangle {
         }
         else if (onReachable) { // castling is being handled in PieceImg class
             gameController.soundPlayer.playMove();
-            makeMoveToUs();
-            if (!reachedPromotion())
-                gameController.turnManager.notifyTurnMade();
+            boolean notifyTurn = !willReachPromotion();
+            makeMoveToUs(notifyTurn);
         }
         else if (onTakeableNonEmpty) {
             gameController.soundPlayer.playCapture();
             pieceImg.die();
-            makeMoveToUs();
-            if (!reachedPromotion())
-                gameController.turnManager.notifyTurnMade();
+            boolean notifyTurn = !willReachPromotion();
+            makeMoveToUs(notifyTurn);
         }
         else if (onTakeableEmpty) { // en passant
             gameController.soundPlayer.playCapture();
@@ -129,23 +127,20 @@ public class Tile extends Rectangle {
         else if (onReachable) { // castling is being handled in PieceImg class
             gameController.soundPlayer.playMove();
             selected.placeInstantly(this);
-            makeMoveToUs();
-            if (!reachedPromotion())
-                gameController.turnManager.notifyTurnMade();
+            boolean notifyTurn = !willReachPromotion();
+            makeMoveToUs(notifyTurn);
         }
         else if (onTakeableNonEmpty) {
             gameController.soundPlayer.playCapture();
             pieceImg.die();
             selected.placeInstantly(this);
-            makeMoveToUs();
-            if (!reachedPromotion())
-                gameController.turnManager.notifyTurnMade();
+            boolean notifyTurn = !willReachPromotion();
+            makeMoveToUs(notifyTurn);
         }
         else if (onTakeableEmpty) { // en passant
             gameController.soundPlayer.playCapture();
             selected.placeInstantly(this);
             enPassantTake();
-            gameController.turnManager.notifyTurnMade();
         }
     }
 
@@ -169,15 +164,18 @@ public class Tile extends Rectangle {
         gameController.actionManager.selectedTile = null;
     }
 
-    public boolean reachedPromotion() {
-        if (pieceImg.piece.getClass() == Pawn.class) {
-            int x = pieceImg.piece.x;
-            int y = pieceImg.piece.y;
-            if ((pieceImg.piece.color == Piece.team.WHITE && pieceImg.piece.x == 0) || (pieceImg.piece.color == Piece.team.BLACK && pieceImg.piece.x == 7)) {
-                if (gameController.turnManager.computerGame && gameController.turnManager.turn != gameController.turnManager.playerTeam)
-                    gameController.actionManager.promotionPanel.chooseQueen(pieceImg);
+    public boolean willReachPromotion() {
+        PieceImg selected = gameController.actionManager.selectedPiece;
+        if (selected.piece.getClass() == Pawn.class) {
+            int a = selected.piece.x;
+            if ((selected.piece.color == Piece.team.WHITE && a == 1 && x == 0) || (selected.piece.color == Piece.team.BLACK && a == 6 && x == 7)) {
+                if (gameController.turnManager.computerGame && gameController.turnManager.turn != gameController.turnManager.playerTeam) {
+                    selected.hideReachableAndTakeable();
+                    gameController.actionManager.promotionPanel.chooseQueen(selected);
+                    return false; // rather unpleasant workaround
+                }
                 else
-                    gameController.actionManager.promotionPanel.show(pieceImg);
+                    gameController.actionManager.promotionPanel.show(selected);
                 return true;
             }
         }
@@ -196,17 +194,17 @@ public class Tile extends Rectangle {
         gameController.boardManager.board.takeAway(tile.x, tile.y);
 
         gameController.actionManager.selectedPiece = selected;
-        makeMoveToUs();
+        makeMoveToUs(true);
     }
 
-    public void makeMoveToUs() {
+    public void makeMoveToUs(boolean notifyTurn) {
         PieceImg selected = gameController.actionManager.selectedPiece;
         int a = selected.piece.x;
         int b = selected.piece.y;
         gameController.boardManager.tiles[a][b].takePieceFrom();
         putPieceOn(selected);
         deselect();
-        selected.move(this);
+        selected.move(this, notifyTurn);
     }
 
     public void makeReachable() {
