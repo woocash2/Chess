@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 
 public class Piece {
 
-    public enum Team {WHITE, BLACK};
+    public enum Team {WHITE, BLACK}
     public enum Type {PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING}
 
     public static HashMap<Type, Consumer<Piece>> positionUpdaters = new HashMap<>();

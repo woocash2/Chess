@@ -1,11 +1,9 @@
 package com.github.woocash2.Chess.controller;
 
 import com.github.woocash2.Chess.model.Board;
-import com.github.woocash2.Chess.model.King;
 import com.github.woocash2.Chess.model.Piece;
-import com.github.woocash2.Chess.model.utils.CoordinateProvider;
+import com.github.woocash2.Chess.model.utils.BoardCode;
 import com.github.woocash2.Chess.model.utils.LabelProvider;
-import com.github.woocash2.Chess.model.PieceFactory;
 import com.github.woocash2.Chess.test.BoardTemplate;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -42,6 +40,7 @@ public class BoardManager {
 
         tiles = new Tile[8][8];
         board = new Board();
+        System.out.println(BoardCode.encodeBoard(board));
 
         fillBoardWithTiles();
         fillBoardWithPieces();
@@ -141,7 +140,6 @@ public class BoardManager {
         }
         if (piece.type == Piece.Type.PAWN) {
             if (piece.x != 0 && piece.x != 7) {
-                System.out.println("BYI");
                 Tile tile = tiles[piece.x][piece.y];
                 tile.pieceImg.die();
                 tile.takePieceFrom();

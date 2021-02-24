@@ -12,6 +12,7 @@ public class Board {
 
     public Piece[][] pieces = new Piece[8][8];
     public Pair<Integer, Integer> whiteKingPos, blackKingPos;
+    public Pair<Integer, Integer> whiteQueenPos, blackQueenPos;
     static PieceFactory factory = new PieceFactory();
 
     public Board(char[][] field) {
@@ -25,6 +26,10 @@ public class Board {
                     whiteKingPos = new Pair<>(i, j);
                 if (pieces[i][j].type == Piece.Type.KING && pieces[i][j].team == Piece.Team.BLACK)
                     blackKingPos = new Pair<>(i, j);
+                if (pieces[i][j].type == Piece.Type.QUEEN && pieces[i][j].team == Piece.Team.WHITE)
+                    whiteQueenPos = new Pair<>(i, j);
+                if (pieces[i][j].type == Piece.Type.QUEEN && pieces[i][j].team == Piece.Team.BLACK)
+                    blackQueenPos = new Pair<>(i, j);
             }
         }
     }
@@ -46,6 +51,10 @@ public class Board {
                     whiteKingPos = new Pair<>(i, j);
                 if (pieces[i][j].type == Piece.Type.KING && pieces[i][j].team == Piece.Team.BLACK)
                     blackKingPos = new Pair<>(i, j);
+                if (pieces[i][j].type == Piece.Type.QUEEN && pieces[i][j].team == Piece.Team.WHITE)
+                    whiteQueenPos = new Pair<>(i, j);
+                if (pieces[i][j].type == Piece.Type.QUEEN && pieces[i][j].team == Piece.Team.BLACK)
+                    blackQueenPos = new Pair<>(i, j);
             }
         }
     }

@@ -22,13 +22,15 @@ public class PieceFactory {
         typeByChar.put('p', Piece.Type.PAWN);
         typeByChar.put('P', Piece.Type.PAWN);
         // moved pieces
-        typeByChar.put('y', Piece.Type.ROOK);
-        typeByChar.put('Y', Piece.Type.ROOK);
         typeByChar.put('x', Piece.Type.KING);
         typeByChar.put('X', Piece.Type.KING);
-        // just moved
+        typeByChar.put('y', Piece.Type.ROOK);
+        typeByChar.put('Y', Piece.Type.ROOK);
         typeByChar.put('z', Piece.Type.PAWN);
         typeByChar.put('Z', Piece.Type.PAWN);
+        // just moved
+        typeByChar.put('t', Piece.Type.PAWN);
+        typeByChar.put('T', Piece.Type.PAWN);
 
 
         charByType.put(Piece.Type.KING, 'k');
@@ -46,10 +48,11 @@ public class PieceFactory {
         Piece.Team team = Character.isLowerCase(c) ? Piece.Team.WHITE : Piece.Team.BLACK;
         Piece.Type type = typeByChar.get(c);
         Piece piece = new Piece(i, j, team, type, board, c);
-        if (Character.toLowerCase(c) == 'x' || Character.toLowerCase(c) == 'y')
+        if (Character.toLowerCase(c) == 'x' || Character.toLowerCase(c) == 'y' || Character.toLowerCase(c) == 'z')
             piece.moved = true;
-        if (Character.toLowerCase(c) == 'z')
-            piece.justMoved = piece.justMoved = true;
+        if (Character.toLowerCase(c) == 't')
+            piece.justMoved = piece.moved = true;
+        piece.transform(piece.type);
         return piece;
     }
 }

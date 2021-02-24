@@ -2,6 +2,7 @@ package com.github.woocash2.Chess.model;
 
 import com.github.woocash2.Chess.controller.GameController;
 import com.github.woocash2.Chess.controller.PieceImg;
+import com.github.woocash2.Chess.model.utils.PieceSquareTable;
 import javafx.util.Pair;
 
 import java.util.ArrayList;
@@ -24,10 +25,13 @@ public class Computer {
 
     public double piecesWeight = 1;
     public double attackingWeight = 0.25;
+    public double positionWeight = 1;
 
     public double maxEval = 1000000.0;
 
     Map<Character, Integer> points = new HashMap<>();
+
+    int[] reachedPositions = new int[10];
 
     public Computer(GameController controller, Piece.Team tm) {
         gameController = controller;
@@ -78,9 +82,9 @@ public class Computer {
     public Move findMove() {
         double wholeTime = 0;
         Pair<Double, Move> best = new Pair<>(0.0, null);
-        int maxDepth = 2;
+        int maxDepth = 4;
 
-        while (wholeTime < 0.3) {
+        while (wholeTime < 0.5) {
 
             long startTime = System.nanoTime();
 
@@ -93,16 +97,19 @@ public class Computer {
             long stopTime = System.nanoTime();
             double t = (double) (stopTime - startTime) / 1e9;
             wholeTime += t;
+            //System.out.println("Positions reached at depth: " + maxDepth + ": " + reachedPositions[maxDepth]);
             maxDepth++;
         }
 
-        System.out.println("Time: " + wholeTime + ", Maxdepth: " + maxDepth + ", Eval: " + best.getKey());
+        System.out.println("Time: " + wholeTime + ", Maxdepth: " + (maxDepth - 1) + ", Eval: " + best.getKey());
         return best.getValue();
     }
 
     public Pair<Double, Move> getMin(Board brd, int depth, int maxDepth, double currentMax) {
-        if (depth == maxDepth)
+        if (depth == maxDepth) {
+            reachedPositions[depth]++;
             return new Pair<Double, Move>(evaluate(brd) + depth, null);
+        }
 
         double best = maxEval;
         Move move = null;
@@ -160,8 +167,10 @@ public class Computer {
     }
 
     public Pair<Double, Move> getMax(Board brd, int depth, int maxDepth, double currentMin) {
-        if (depth == maxDepth)
+        if (depth == maxDepth) {
+            reachedPositions[depth]++;
             return new Pair<Double, Move>(evaluate(brd) - depth, null);
+        }
 
         double best = -maxEval;
         Move move = null;
@@ -225,7 +234,11 @@ public class Computer {
                     continue;
                 char c = brd.get(i, j).identifier;
                 Piece.Team t = Character.isLowerCase(c) ? Piece.Team.WHITE : Piece.Team.BLACK;
-                eval += points.get(c) * (piecesWeight - brd.numOfAttackers(t, i, j) * attackingWeight);
+                boolean opponentQueenPresent = t == Piece.Team.WHITE ? brd.blackQueenPos != null : brd.whiteQueenPos != null;
+
+                eval += points.get(c) * piecesWeight;
+                eval -= points.get(c) * brd.numOfAttackers(t, i, j) * attackingWeight;
+                eval += PieceSquareTable.positionEvaluation(brd.get(i, j), opponentQueenPresent);
             }
         }
         return eval;
