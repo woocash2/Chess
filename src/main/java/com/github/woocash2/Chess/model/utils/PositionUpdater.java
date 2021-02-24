@@ -12,11 +12,20 @@ public interface PositionUpdater {
     public static Function<Pair<Integer, Integer>, Boolean> addToReachableFunction(Piece piece) {
         return p -> {
             Board afterMove = new Board(piece.board);
-            afterMove.move(piece.x, piece.y, p.getKey(), p.getValue());
-            if (piece.color == Piece.team.WHITE && afterMove.isWhiteKingAttacked())
+            Piece nPiece = afterMove.get(piece.x, piece.y);
+            nPiece.move(p.getKey(), p.getValue());
+
+            if (afterMove.whiteKingPos == null || afterMove.blackKingPos == null) {
+                afterMove.printBoard();
+                System.out.println(piece.x + " " + piece.y + " " + p.getKey() + " " + p.getValue());
+            }
+
+            if (piece.team == Piece.Team.WHITE && afterMove.isWhiteKingAttacked()) {
                 return false;
-            if (piece.color == Piece.team.BLACK && afterMove.isBlackKingAttacked())
+            }
+            if (piece.team == Piece.Team.BLACK && afterMove.isBlackKingAttacked()) {
                 return false;
+            }
             return piece.reachablePositions.add(p);
         };
     }
@@ -24,25 +33,26 @@ public interface PositionUpdater {
     public static Function<Pair<Integer, Integer>, Boolean> addToTakeableFunction(Piece piece) {
         return p -> {
             Board afterMove = new Board(piece.board);
-            afterMove.move(piece.x, piece.y, p.getKey(), p.getValue());
+            Piece nPiece = afterMove.get(piece.x, piece.y);
+            nPiece.move(p.getKey(), p.getValue());
             int a = p.getKey(), b = p.getValue();
-            if (piece.color == Piece.team.WHITE && Character.isUpperCase(piece.board.get(a, b)) && !afterMove.isWhiteKingAttacked())
+            if (piece.team == Piece.Team.WHITE && piece.board.get(a, b).team == Piece.Team.BLACK && !afterMove.isWhiteKingAttacked())
                 return piece.takeablePositions.add(p);
-            if (piece.color == Piece.team.BLACK && Character.isLowerCase(piece.board.get(a, b)) && !afterMove.isBlackKingAttacked())
+            if (piece.team == Piece.Team.BLACK && piece.board.get(a, b).team == Piece.Team.WHITE && !afterMove.isBlackKingAttacked())
                 return piece.takeablePositions.add(p);
             return false;
         };
     }
 
-    public static Function<Pair<Integer, Integer>, Boolean> addToTakeableEnPassantFunction(Pawn pieceA, Pawn pieceB) {
+    public static Function<Pair<Integer, Integer>, Boolean> addToTakeableEnPassantFunction(Piece pieceA, Piece pieceB) {
         return p -> {
             Board afterMove = new Board(pieceA.board);
             afterMove.move(pieceB.x, pieceB.y, p.getKey(), p.getValue());
             afterMove.move(pieceA.x, pieceA.y, p.getKey(), p.getValue());
             int a = p.getKey(), b = p.getValue();
-            if (pieceA.color == Piece.team.WHITE && Character.isUpperCase(pieceA.board.get(pieceB.x, pieceB.y)) && !afterMove.isWhiteKingAttacked())
+            if (pieceA.team == Piece.Team.WHITE && pieceA.board.get(pieceB.x, pieceB.y).team == Piece.Team.BLACK && !afterMove.isWhiteKingAttacked())
                 return pieceA.takeablePositions.add(p);
-            if (pieceA.color == Piece.team.BLACK && Character.isLowerCase(pieceA.board.get(pieceB.x, pieceB.y)) && !afterMove.isBlackKingAttacked())
+            if (pieceA.team == Piece.Team.BLACK && pieceA.board.get(pieceB.x, pieceB.y).team == Piece.Team.WHITE && !afterMove.isBlackKingAttacked())
                 return pieceA.takeablePositions.add(p);
             return false;
         };

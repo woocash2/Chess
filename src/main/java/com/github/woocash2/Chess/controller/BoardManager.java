@@ -3,8 +3,10 @@ package com.github.woocash2.Chess.controller;
 import com.github.woocash2.Chess.model.Board;
 import com.github.woocash2.Chess.model.King;
 import com.github.woocash2.Chess.model.Piece;
+import com.github.woocash2.Chess.model.utils.CoordinateProvider;
 import com.github.woocash2.Chess.model.utils.LabelProvider;
-import com.github.woocash2.Chess.model.utils.PieceFactory;
+import com.github.woocash2.Chess.model.PieceFactory;
+import com.github.woocash2.Chess.test.BoardTemplate;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -44,7 +46,7 @@ public class BoardManager {
         fillBoardWithTiles();
         fillBoardWithPieces();
 
-        if (gameController.turnManager.computerGame && gameController.turnManager.playerTeam == Piece.team.BLACK)
+        if (gameController.turnManager.computerGame && gameController.turnManager.playerTeam == Piece.Team.BLACK)
             flipTheBoard();
 
         if (gameController.turnManager.computerGame)
@@ -90,9 +92,7 @@ public class BoardManager {
             for (int j = 0; j < 8; j++) {
                 if (board.isEmpty(i, j))
                     continue;
-                Piece piece = PieceFactory.get(i, j, board);
-                if (piece.onBoard == 'k') gameController.turnManager.whiteKing = (King) piece;
-                if (piece.onBoard == 'K') gameController.turnManager.blackKing = (King) piece;
+                Piece piece = board.get(i, j);
 
                 PieceImg pieceImg = new PieceImg(piece, gameController);
                 pieces.add(pieceImg);
@@ -100,9 +100,6 @@ public class BoardManager {
                 tiles[i][j].putPieceOn(pieceImg);
                 pieceImg.setX(tiles[i][j].getCenter().getKey());
                 pieceImg.setY(tiles[i][j].getCenter().getValue());
-
-                if (pieceImg.piece.onBoard == 'r') gameController.turnManager.whiteRooks.add(pieceImg);
-                if (pieceImg.piece.onBoard == 'R') gameController.turnManager.blackRooks.add(pieceImg);
             }
         }
     }
@@ -122,6 +119,33 @@ public class BoardManager {
         }
         for (PieceImg piece : pieces) {
             piece.setScaleY(-1);
+        }
+    }
+
+    public void handleAdditional(Piece piece) {
+        if (piece == null)
+            return;
+        if (piece.type == Piece.Type.ROOK) {
+            int fx = piece.x;
+            int fy = piece.y == 3 ? 0 : 7;
+            int ty = piece.y;
+
+            Tile from = tiles[fx][fy];
+            Tile to = tiles[fx][ty];
+
+            PieceImg pieceImg = from.pieceImg;
+            to.putPieceOn(pieceImg);
+            from.takePieceFrom();
+
+            pieceImg.playTransition(to, false);
+        }
+        if (piece.type == Piece.Type.PAWN) {
+            if (piece.x != 0 && piece.x != 7) {
+                System.out.println("BYI");
+                Tile tile = tiles[piece.x][piece.y];
+                tile.pieceImg.die();
+                tile.takePieceFrom();
+            }
         }
     }
 }

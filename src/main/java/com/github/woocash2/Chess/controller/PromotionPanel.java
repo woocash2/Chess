@@ -5,15 +5,14 @@ import javafx.scene.layout.TilePane;
 import javafx.scene.shape.Rectangle;
 import com.github.woocash2.Chess.model.Piece;
 import com.github.woocash2.Chess.model.utils.ImageCropper;
-import com.github.woocash2.Chess.model.utils.PieceFactory;
+import com.github.woocash2.Chess.model.PieceFactory;
 
 public class PromotionPanel {
 
     private final TilePane promotionPane;
     private final Rectangle paneBackground;
     private final Rectangle boardCover;
-    private final char[] whitePromotionNames = {'q', 'r', 'b', 'n'};
-    private final char[] blackPromotionNames = {'Q', 'R', 'B', 'N'};
+    private final Piece.Type[] promoTypes = {Piece.Type.QUEEN, Piece.Type.ROOK, Piece.Type.BISHOP, Piece.Type.KNIGHT};
     public GameController gameController;
 
     public PromotionPanel(GameController controller) {
@@ -26,26 +25,17 @@ public class PromotionPanel {
     public void show(PieceImg promoPiece) {
         boardCover.setVisible(true); // disables pieces movements during promotion
 
-        Piece.team team = promoPiece.piece.color;
+        Piece.Team team = promoPiece.piece.team;
         paneBackground.setVisible(true);
         promotionPane.setVisible(true);
 
-        char[] promotionNames;
-        if (team == Piece.team.WHITE)
-            promotionNames = whitePromotionNames;
-        else
-            promotionNames = blackPromotionNames;
-
-        for (char c : promotionNames) {
-            ImageView view = new ImageView(ImageCropper.getImageByName(c));
+        for (Piece.Type type : promoTypes) {
+            ImageView view = new ImageView(ImageCropper.getImageByTeamAndType(promoPiece.piece.team, type));
             view.setFitHeight(100);
             view.setFitWidth(100);
 
             view.setOnMouseClicked(e -> {
-                int x = promoPiece.piece.x;
-                int y = promoPiece.piece.y;
-                promoPiece.piece = PieceFactory.putOnBoardAndGet(c, x, y, promoPiece.piece.board);
-                promoPiece.setImage(ImageCropper.getImage(promoPiece.piece));
+                chooseType(promoPiece, type);
                 hide();
                 gameController.turnManager.notifyTurnMade();
             });
@@ -55,11 +45,11 @@ public class PromotionPanel {
     }
 
     // for computer promotion purposes
-    public void chooseQueen(PieceImg promoPiece) {
+    public void chooseType(PieceImg promoPiece, Piece.Type type) {
         int x = promoPiece.piece.x;
         int y = promoPiece.piece.y;
-        char c = promoPiece.piece.color == Piece.team.WHITE ? 'q' : 'Q';
-        promoPiece.piece = PieceFactory.putOnBoardAndGet(c, x, y, promoPiece.piece.board);
+
+        promoPiece.piece.transform(type);
         promoPiece.setImage(ImageCropper.getImage(promoPiece.piece));
     }
 

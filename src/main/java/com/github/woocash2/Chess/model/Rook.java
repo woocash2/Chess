@@ -5,15 +5,7 @@ import com.github.woocash2.Chess.model.utils.PositionUpdater;
 
 import java.util.function.Function;
 
-public class Rook extends Piece {
-
-    public Rook(int x, int y, team col, Board board) {
-        super(x, y, col, board);
-        if (col == team.WHITE)
-            onBoard = 'r';
-        else
-            onBoard = 'R';
-    }
+public interface Rook {
 
     public static <T, E> void boardIteration(Function<Pair<Integer, Integer>, T> f1, Function<Pair<Integer, Integer>, E> f2, Board board, int x, int y) {
         for (int i = x + 1; i < 8; i++) {
@@ -50,10 +42,9 @@ public class Rook extends Piece {
         }
     }
 
-    @Override
-    public void updatePositions() {
-        reachablePositions.clear();
-        takeablePositions.clear();
-        boardIteration(PositionUpdater.addToReachableFunction(this), PositionUpdater.addToTakeableFunction(this), board, x, y);
+    public static void updatePositions(Piece piece) {
+        piece.reachablePositions.clear();
+        piece.takeablePositions.clear();
+        boardIteration(PositionUpdater.addToReachableFunction(piece), PositionUpdater.addToTakeableFunction(piece), piece.board, piece.x, piece.y);
     }
 }

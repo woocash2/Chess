@@ -14,6 +14,8 @@ public class Move {
     public int toX;
     public int toY;
 
+    public Piece.Type promoteTo = null;
+
     public double fromXScreen() {
         return fromY * 100.0 + 50;
     }

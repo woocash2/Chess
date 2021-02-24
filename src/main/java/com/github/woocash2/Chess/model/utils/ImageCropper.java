@@ -1,5 +1,6 @@
 package com.github.woocash2.Chess.model.utils;
 
+import com.github.woocash2.Chess.model.PieceFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import com.github.woocash2.Chess.model.Piece;
@@ -17,7 +18,7 @@ public interface ImageCropper {
     }
 
     public static WritableImage getImage(Piece piece) {
-        return getImageByName(piece.onBoard);
+        return getImageByName(piece.identifier);
     }
 
     public static WritableImage getImageByName(char name) {
@@ -37,5 +38,11 @@ public interface ImageCropper {
         };
 
         return cropImg(x, y);
+    }
+
+    public static WritableImage getImageByTeamAndType(Piece.Team team, Piece.Type type) {
+        char name = PieceFactory.charByType.get(type);
+        name = team == Piece.Team.WHITE ? Character.toLowerCase(name) : Character.toUpperCase(name);
+        return getImageByName(name);
     }
 }

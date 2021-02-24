@@ -70,7 +70,7 @@ public class MenuController {
 
     public static int chosenTime = 10;
     public static boolean computerGame = false;
-    public static Piece.team playerTeam = Piece.team.WHITE;
+    public static Piece.Team playerTeam = Piece.Team.WHITE;
 
     Paint buttonColor;
     Paint highlightColor = Color.INDIANRED;
@@ -140,11 +140,11 @@ public class MenuController {
             slideVboxIn(teamVbox);
         });
         whiteLabel.setOnMouseClicked(e -> {
-            playerTeam = Piece.team.WHITE;
+            playerTeam = Piece.Team.WHITE;
             launchGame(0);
         });
         blackLabel.setOnMouseClicked(e -> {
-            playerTeam = Piece.team.BLACK;
+            playerTeam = Piece.Team.BLACK;
             launchGame(0);
         });
         randomLabel.setOnMouseClicked(e -> {

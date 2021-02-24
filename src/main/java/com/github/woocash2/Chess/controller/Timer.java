@@ -1,5 +1,6 @@
 package com.github.woocash2.Chess.controller;
 
+import com.github.woocash2.Chess.model.utils.TeamRandomizer;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 import com.github.woocash2.Chess.model.Piece;
@@ -10,11 +11,11 @@ public class Timer extends Thread {
     private long millisToSecondPass;
     public Label time;
     private GameController gameController;
-    Piece.team team;
+    Piece.Team team;
 
     private boolean stop = false;
 
-    public Timer(long m, Piece.team color, Label label, GameController game) {
+    public Timer(long m, Piece.Team color, Label label, GameController game) {
         mins = m;
         secs = 0;
         millisToSecondPass = 1000;
@@ -60,7 +61,7 @@ public class Timer extends Thread {
                 millisToSecondPass += 1000;
 
                 if (mins == 0 && secs == 0) {
-                    Platform.runLater(() -> gameController.turnManager.endTheGame(Piece.oponnent(team)));
+                    Platform.runLater(() -> gameController.turnManager.endTheGame(TeamRandomizer.getOpposite(team)));
                     return;
                 }
             }

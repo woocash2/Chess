@@ -6,14 +6,7 @@ import com.github.woocash2.Chess.model.utils.PositionUpdater;
 import java.util.Iterator;
 import java.util.function.Function;
 
-public class King extends Piece {
-    public King(int x, int y, team col, Board board) {
-        super(x, y, col, board);
-        if (col == team.WHITE)
-            onBoard = 'k';
-        else
-            onBoard = 'K';
-    }
+public interface King {
 
     public static <T, E> void boardIteration(Function<Pair<Integer, Integer>, T> f1, Function<Pair<Integer, Integer>, E> f2, Board board, int x, int y) {
         Iterator<Pair<Integer, Integer>> kingIterator = new Iterator<Pair<Integer, Integer>>() {
@@ -48,42 +41,53 @@ public class King extends Piece {
             int a = field.getKey(), b = field.getValue();
             if (board.inBoardRange(a, b) && board.isEmpty(a, b))
                 f1.apply(field);
-            if (board.inBoardRange(a, b))
+            else if (board.inBoardRange(a, b))
                 f2.apply(field);
         }
     }
 
-    @Override
-    public void updatePositions() {
-        reachablePositions.clear();
-        takeablePositions.clear();
-        boardIteration(PositionUpdater.addToReachableFunction(this), PositionUpdater.addToTakeableFunction(this), board, x, y);
+    public static void updatePositions(Piece piece) {
+        piece.reachablePositions.clear();
+        piece.takeablePositions.clear();
+        boardIteration(PositionUpdater.addToReachableFunction(piece), PositionUpdater.addToTakeableFunction(piece), piece.board, piece.x, piece.y);
+        considerCastling(piece);
     }
 
-    public void considerCastling(Rook rook) { // assumes same color rook
-        if (!moved && rook.alive && !rook.moved) {
-            int a = Math.min(y, rook.y);
-            int b = Math.max(y, rook.y);
+    public static void considerCastling(Piece piece) { // assumes same color rook
 
-            for (int i = a + 1; i < b; i++) {
-                if (!board.isEmpty(x, i))
-                    return;
-            }
+        if (piece.type != Piece.Type.KING || piece.moved)
+            return;
 
-            if (rook.y == 0) {
-                for (int i = y - 2; i <= y; i++) {
-                    if (board.numOfAttackers(color, x, i) > 0)
-                        return;
-                }
-                reachablePositions.add(new Pair<>(x, y - 2));
+        int x = piece.x;
+        int y = piece.y;
+
+        Board board = piece.board;
+        Piece.Team team = piece.team;
+        Piece leftRook = board.pieces[x][0];
+        Piece rightRook = board.pieces[x][7];
+
+        if (leftRook != null && leftRook.type == Piece.Type.ROOK && !leftRook.moved) {
+            boolean leftSuccess = true;
+            for (int j = 0; j <= y; j++) {
+                if (j >= y - 2 && board.numOfAttackers(team, x, j) > 0)
+                    leftSuccess = false;
+                if (j > 0 && j < y && !board.isEmpty(x, j))
+                    leftSuccess = false;
             }
-            else {
-                for (int i = y; i <= y + 2; i++) {
-                    if (board.numOfAttackers(color, x, i) > 0)
-                        return;
-                }
-                reachablePositions.add(new Pair<>(x, y + 2));
+            if (leftSuccess)
+                piece.reachablePositions.add(new Pair<>(x, y - 2));
+        }
+
+        if (rightRook != null && rightRook.type == Piece.Type.ROOK && !rightRook.moved) {
+            boolean rightSuccess = true;
+            for (int j = y; j <= 7; j++) {
+                if (j <= y + 2 && board.numOfAttackers(team, x, j) > 0)
+                    rightSuccess = false;
+                if (j > y && j < 7 && !board.isEmpty(x, j))
+                    rightSuccess = false;
             }
+            if (rightSuccess)
+                piece.reachablePositions.add(new Pair<>(x, y + 2));
         }
     }
 }

@@ -2,20 +2,18 @@ package com.github.woocash2.Chess.model;
 
 import com.github.woocash2.Chess.controller.GameController;
 import com.github.woocash2.Chess.controller.PieceImg;
-import com.github.woocash2.Chess.model.utils.PieceFactory;
 import javafx.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 public class Computer {
 
     public Board board;
     public GameController gameController;
-    public Piece.team team;
+    public Piece.Team team;
 
     public int pawnPts = 100;
     public int bishopPts = 300;
@@ -31,7 +29,7 @@ public class Computer {
 
     Map<Character, Integer> points = new HashMap<>();
 
-    public Computer(GameController controller, Piece.team tm) {
+    public Computer(GameController controller, Piece.Team tm) {
         gameController = controller;
         team = tm;
         points.put('p', pawnPts);
@@ -56,7 +54,7 @@ public class Computer {
         ArrayList<Move> moves = new ArrayList<>();
 
         for (PieceImg piece : gameController.boardManager.pieces) {
-            if (piece.piece.color != team)
+            if (piece.piece.team != team)
                 continue;
 
             int fx = piece.piece.x;
@@ -87,7 +85,7 @@ public class Computer {
             long startTime = System.nanoTime();
 
             Board brd = new Board(board);
-            if (team == Piece.team.WHITE)
+            if (team == Piece.Team.WHITE)
                 best = getMax(brd, 0, maxDepth, maxEval);
             else
                 best = getMin(brd, 0, maxDepth, -maxEval);
@@ -104,7 +102,7 @@ public class Computer {
 
     public Pair<Double, Move> getMin(Board brd, int depth, int maxDepth, double currentMax) {
         if (depth == maxDepth)
-            return new Pair<Double, Move>(evaluate(brd), null);
+            return new Pair<Double, Move>(evaluate(brd) + depth, null);
 
         double best = maxEval;
         Move move = null;
@@ -113,10 +111,11 @@ public class Computer {
 
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                char c = brd.get(i, j);
-                if (c == '-' || Character.isLowerCase(c))
+
+                Piece piece = brd.get(i, j);
+                if (piece == null || piece.team == Piece.Team.WHITE)
                     continue;
-                Piece piece = PieceFactory.get(i, j, brd);
+
                 piece.updatePositions();
                 int fx = i;
                 int fy = j;
@@ -124,22 +123,31 @@ public class Computer {
                 piece.reachablePositions.addAll(piece.takeablePositions);
                 allMoves += piece.reachablePositions.size();
 
-                for (Pair<Integer, Integer> pos : piece.reachablePositions) { // not considering castling or en passant
+                for (Pair<Integer, Integer> pos : piece.reachablePositions) {
                     int tx = pos.getKey();
                     int ty = pos.getValue();
                     Board afterMove = new Board(brd);
-                    afterMove.move(fx, fy, tx, ty);
+                    Piece nPiece = afterMove.get(piece.x, piece.y);
+                    nPiece.move(tx, ty);
 
-                    Pair<Double, Move> next = getMax(afterMove, depth + 1, maxDepth, best);
-                    double ev = next.getKey();
+                    // to handle eventual promotion
+                    Piece.Type[] types = nPiece.type == Piece.Type.PAWN && nPiece.x == 7 ? new Piece.Type[] {Piece.Type.QUEEN, Piece.Type.ROOK, Piece.Type.KNIGHT, Piece.Type.BISHOP} : new Piece.Type[] {nPiece.type};
+                    boolean promote = nPiece.type == Piece.Type.PAWN && nPiece.x == 7;
 
-                    if (ev < best) {
-                        best = ev;
-                        move = new Move(fx, fy, tx, ty);
+                    for (Piece.Type type : types) {
+                        nPiece.transform(type);
+                        Pair<Double, Move> next = getMax(afterMove, depth + 1, maxDepth, best);
+                        double ev = next.getKey();
+
+                        if (ev < best) {
+                            best = ev;
+                            move = new Move(fx, fy, tx, ty);
+                            move.promoteTo = promote ? type : null;
+                        }
+
+                        if (best <= currentMax)
+                            return new Pair<>(best, move);
                     }
-
-                    if (best <= currentMax)
-                        return new Pair<>(best, move);
                 }
             }
         }
@@ -153,7 +161,7 @@ public class Computer {
 
     public Pair<Double, Move> getMax(Board brd, int depth, int maxDepth, double currentMin) {
         if (depth == maxDepth)
-            return new Pair<Double, Move>(evaluate(brd), null);
+            return new Pair<Double, Move>(evaluate(brd) - depth, null);
 
         double best = -maxEval;
         Move move = null;
@@ -162,10 +170,11 @@ public class Computer {
 
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                char c = brd.get(i, j);
-                if (c == '-' || Character.isUpperCase(c))
+
+                Piece piece = brd.get(i, j);
+                if (piece == null || piece.team == Piece.Team.BLACK)
                     continue;
-                Piece piece = PieceFactory.get(i, j, brd);
+
                 piece.updatePositions();
                 int fx = i;
                 int fy = j;
@@ -177,18 +186,26 @@ public class Computer {
                     int tx = pos.getKey();
                     int ty = pos.getValue();
                     Board afterMove = new Board(brd);
-                    afterMove.move(fx, fy, tx, ty);
+                    Piece nPiece = afterMove.get(piece.x, piece.y);
+                    nPiece.move(tx, ty);
 
-                    Pair<Double, Move> next = getMin(afterMove, depth + 1, maxDepth, best);
-                    double ev = next.getKey();
+                    Piece.Type[] types = nPiece.type == Piece.Type.PAWN && nPiece.x == 0 ? new Piece.Type[] {Piece.Type.QUEEN, Piece.Type.ROOK, Piece.Type.KNIGHT, Piece.Type.BISHOP} : new Piece.Type[] {nPiece.type};
+                    boolean promote = nPiece.type == Piece.Type.PAWN && nPiece.x == 0;
 
-                    if (ev > best) {
-                        best = ev;
-                        move = new Move(fx, fy, tx, ty);
+                    for (Piece.Type type : types) {
+                        nPiece.transform(type);
+                        Pair<Double, Move> next = getMin(afterMove, depth + 1, maxDepth, best);
+                        double ev = next.getKey();
+
+                        if (ev > best) {
+                            best = ev;
+                            move = new Move(fx, fy, tx, ty);
+                            move.promoteTo = promote ? type : null;
+                        }
+
+                        if (best >= currentMin)
+                            return new Pair<>(best, move);
                     }
-
-                    if (best >= currentMin)
-                        return new Pair<>(best, move);
                 }
             }
         }
@@ -204,10 +221,10 @@ public class Computer {
         double eval = 0;
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                char c = brd.get(i, j);
-                if (c == '-')
+                if (brd.get(i, j) == null)
                     continue;
-                Piece.team t = Character.isLowerCase(c) ? Piece.team.WHITE : Piece.team.BLACK;
+                char c = brd.get(i, j).identifier;
+                Piece.Team t = Character.isLowerCase(c) ? Piece.Team.WHITE : Piece.Team.BLACK;
                 eval += points.get(c) * (piecesWeight - brd.numOfAttackers(t, i, j) * attackingWeight);
             }
         }

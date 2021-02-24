@@ -1,7 +1,5 @@
 package com.github.woocash2.Chess.controller;
-import com.github.woocash2.Chess.model.Pawn;
 import javafx.scene.Group;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
@@ -58,13 +56,12 @@ public class Tile extends Rectangle {
 
         // What is the type of the mouse press?
 
-        boolean onOurNotSelected = (pieceImg != null) && (pieceImg.piece.color == gameController.turnManager.turn) && (pieceImg != selected);
-        boolean onOurSelected = (pieceImg != null) && (pieceImg.piece.color == gameController.turnManager.turn) && (pieceImg == selected);
-        boolean onTheirNotTakeable = (pieceImg != null) && (pieceImg.piece.color != gameController.turnManager.turn) && !takeable;
+        boolean onOurNotSelected = (pieceImg != null) && (pieceImg.piece.team == gameController.turnManager.turn) && (pieceImg != selected);
+        boolean onOurSelected = (pieceImg != null) && (pieceImg.piece.team == gameController.turnManager.turn) && (pieceImg == selected);
+        boolean onTheirNotTakeable = (pieceImg != null) && (pieceImg.piece.team != gameController.turnManager.turn) && !takeable;
         boolean onEmpty = (pieceImg == null) && !reachable && !takeable;
         boolean onReachable = reachable;
-        boolean onTakeableNonEmpty = takeable && (pieceImg != null);
-        boolean onTakeableEmpty = takeable && (pieceImg == null);
+        boolean onTakeable = takeable;
 
         if (onOurNotSelected) {
             deselect();
@@ -82,16 +79,12 @@ public class Tile extends Rectangle {
             boolean notifyTurn = !willReachPromotion();
             makeMoveToUs(notifyTurn);
         }
-        else if (onTakeableNonEmpty) {
+        else if (onTakeable) {
             gameController.soundPlayer.playCapture();
-            pieceImg.die();
+            if (pieceImg != null)
+                pieceImg.die();
             boolean notifyTurn = !willReachPromotion();
             makeMoveToUs(notifyTurn);
-        }
-        else if (onTakeableEmpty) { // en passant
-            gameController.soundPlayer.playCapture();
-            enPassantTake();
-            gameController.turnManager.notifyTurnMade();
         }
     }
 
@@ -104,13 +97,12 @@ public class Tile extends Rectangle {
 
         // What is the type of the mouse release?
 
-        boolean onOurNotSelected = (pieceImg != null) && (pieceImg.piece.color == gameController.turnManager.turn) && (pieceImg != selected);
-        boolean onOurSelected = (pieceImg != null) && (pieceImg.piece.color == gameController.turnManager.turn) && (pieceImg == selected);
-        boolean onTheirNotTakeable = (pieceImg != null) && (pieceImg.piece.color != gameController.turnManager.turn) && !takeable;
+        boolean onOurNotSelected = (pieceImg != null) && (pieceImg.piece.team == gameController.turnManager.turn) && (pieceImg != selected);
+        boolean onOurSelected = (pieceImg != null) && (pieceImg.piece.team == gameController.turnManager.turn) && (pieceImg == selected);
+        boolean onTheirNotTakeable = (pieceImg != null) && (pieceImg.piece.team != gameController.turnManager.turn) && !takeable;
         boolean onEmpty = (pieceImg == null) && !reachable && !takeable;
         boolean onReachable = reachable;
-        boolean onTakeableNonEmpty = takeable && (pieceImg != null);
-        boolean onTakeableEmpty = takeable && (pieceImg == null);
+        boolean onTakeable = takeable;
 
         if (onOurSelected) {
             if (gameController.actionManager.releaseCnt > 1) {
@@ -124,23 +116,19 @@ public class Tile extends Rectangle {
         else if (onOurNotSelected || onTheirNotTakeable || onEmpty) {
             gameController.actionManager.restoreSelectedPosition();
         }
-        else if (onReachable) { // castling is being handled in PieceImg class
+        else if (onReachable) {
             gameController.soundPlayer.playMove();
             selected.placeInstantly(this);
             boolean notifyTurn = !willReachPromotion();
             makeMoveToUs(notifyTurn);
         }
-        else if (onTakeableNonEmpty) {
+        else if (onTakeable) {
             gameController.soundPlayer.playCapture();
-            pieceImg.die();
+            if (pieceImg != null)
+                pieceImg.die();
             selected.placeInstantly(this);
             boolean notifyTurn = !willReachPromotion();
             makeMoveToUs(notifyTurn);
-        }
-        else if (onTakeableEmpty) { // en passant
-            gameController.soundPlayer.playCapture();
-            selected.placeInstantly(this);
-            enPassantTake();
         }
     }
 
@@ -166,12 +154,12 @@ public class Tile extends Rectangle {
 
     public boolean willReachPromotion() {
         PieceImg selected = gameController.actionManager.selectedPiece;
-        if (selected.piece.getClass() == Pawn.class) {
+        if (selected.piece.type == Piece.Type.PAWN) {
             int a = selected.piece.x;
-            if ((selected.piece.color == Piece.team.WHITE && a == 1 && x == 0) || (selected.piece.color == Piece.team.BLACK && a == 6 && x == 7)) {
+            if ((selected.piece.team == Piece.Team.WHITE && a == 1 && x == 0) || (selected.piece.team == Piece.Team.BLACK && a == 6 && x == 7)) {
                 if (gameController.turnManager.computerGame && gameController.turnManager.turn != gameController.turnManager.playerTeam) {
                     selected.hideReachableAndTakeable();
-                    gameController.actionManager.promotionPanel.chooseQueen(selected);
+                    gameController.actionManager.promotionPanel.chooseType(selected, gameController.turnManager.computerPromoType);
                     return false; // rather unpleasant workaround
                 }
                 else
@@ -180,21 +168,6 @@ public class Tile extends Rectangle {
             }
         }
         return false;
-    }
-
-    public void enPassantTake() {
-        PieceImg selected = gameController.actionManager.selectedPiece;
-        Tile tile;
-        if (gameController.actionManager.selectedPiece.piece.color == Piece.team.WHITE)
-            tile = gameController.boardManager.tiles[x + 1][y];
-        else
-            tile = gameController.boardManager.tiles[x - 1][y];
-        tile.pieceImg.die();
-        tile.takePieceFrom();
-        gameController.boardManager.board.takeAway(tile.x, tile.y);
-
-        gameController.actionManager.selectedPiece = selected;
-        makeMoveToUs(true);
     }
 
     public void makeMoveToUs(boolean notifyTurn) {
@@ -230,7 +203,6 @@ public class Tile extends Rectangle {
     public void putPieceOn(PieceImg img) {
         pieceImg = img;
     }
-
     public void takePieceFrom() {
         pieceImg = null;
     }

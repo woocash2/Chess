@@ -2,21 +2,12 @@ package com.github.woocash2.Chess.model;
 
 import com.github.woocash2.Chess.model.utils.PositionUpdater;
 
-public class Queen extends Piece {
+public interface Queen {
 
-    public Queen(int x, int y, Piece.team col, Board board) {
-        super(x, y, col, board);
-        if (col == Piece.team.WHITE)
-            onBoard = 'q';
-        else
-            onBoard = 'Q';
-    }
-
-    @Override
-    public void updatePositions() {
-        reachablePositions.clear();
-        takeablePositions.clear();
-        Bishop.boardIteration(PositionUpdater.addToReachableFunction(this), PositionUpdater.addToTakeableFunction(this), board, x, y);
-        Rook.boardIteration(PositionUpdater.addToReachableFunction(this), PositionUpdater.addToTakeableFunction(this) ,board, x, y);
+    public static void updatePositions(Piece piece) {
+        piece.reachablePositions.clear();
+        piece.takeablePositions.clear();
+        Bishop.boardIteration(PositionUpdater.addToReachableFunction(piece), PositionUpdater.addToTakeableFunction(piece), piece.board, piece.x, piece.y);
+        Rook.boardIteration(PositionUpdater.addToReachableFunction(piece), PositionUpdater.addToTakeableFunction(piece), piece.board, piece.x, piece.y);
     }
 }

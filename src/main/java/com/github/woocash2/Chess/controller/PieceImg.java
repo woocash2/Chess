@@ -1,7 +1,6 @@
 package com.github.woocash2.Chess.controller;
 
 import javafx.animation.TranslateTransition;
-import javafx.application.Platform;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 import javafx.util.Pair;
@@ -25,20 +24,11 @@ public class PieceImg extends ImageView {
     public void move(Tile target, boolean notifyTurn) {
         int x = target.x;
         int y = target.y;
-        if (piece.getClass() == King.class && Math.abs(piece.y - y) > 1) { // this means castling
-            if (piece.y > y) {
-                gameController.actionManager.selectedPiece = piece.color == Piece.team.WHITE ? gameController.turnManager.whiteRooks.get(0) : gameController.turnManager.blackRooks.get(0);
-                gameController.boardManager.tiles[x][y + 1].makeMoveToUs(false);
-            }
-            else {
-                gameController.actionManager.selectedPiece = piece.color == Piece.team.WHITE ? gameController.turnManager.whiteRooks.get(1) : gameController.turnManager.blackRooks.get(1);
-                gameController.boardManager.tiles[x][y - 1].makeMoveToUs(false);
-            }
-        }
 
-        piece.move(x, y);
+        Piece additional = piece.move(x, y);
+        gameController.boardManager.handleAdditional(additional);
         gameController.boardCover.setVisible(true);
-        playTransitionAndNotifyMove(target, notifyTurn);
+        playTransition(target, notifyTurn);
     }
 
     public void placeInstantly(Tile tile) {
@@ -70,10 +60,11 @@ public class PieceImg extends ImageView {
         }
     }
 
-    public void playTransitionAndNotifyMove(Tile target, boolean notifyTurn) {
+    public void playTransition(Tile target, boolean notifyTurn) {
         TranslateTransition transition = new TranslateTransition(Duration.millis(200), this);
         transition.setToX(target.getCenter().getKey() - getX());
         transition.setToY(target.getCenter().getValue() - getY());
+
         transition.setOnFinished(e -> {
             setX(getX() + translateXProperty().getValue());
             setY(getY() + translateYProperty().getValue());

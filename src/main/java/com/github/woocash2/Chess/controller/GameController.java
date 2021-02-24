@@ -1,26 +1,18 @@
 package com.github.woocash2.Chess.controller;
 
 import com.github.woocash2.Chess.Main;
-import com.github.woocash2.Chess.model.utils.CoordinateProvider;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javafx.stage.Stage;
-import com.github.woocash2.Chess.model.*;
-import com.github.woocash2.Chess.model.utils.PieceFactory;
-import javafx.util.Pair;
 
 
 public class GameController {
