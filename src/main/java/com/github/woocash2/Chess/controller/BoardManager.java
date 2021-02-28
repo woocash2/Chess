@@ -1,8 +1,7 @@
 package com.github.woocash2.Chess.controller;
 
 import com.github.woocash2.Chess.model.Board;
-import com.github.woocash2.Chess.model.Piece;
-import com.github.woocash2.Chess.model.utils.BoardCode;
+import com.github.woocash2.Chess.model.Move;
 import com.github.woocash2.Chess.model.utils.LabelProvider;
 import com.github.woocash2.Chess.test.BoardTemplate;
 import javafx.geometry.Pos;
@@ -40,12 +39,11 @@ public class BoardManager {
 
         tiles = new Tile[8][8];
         board = new Board();
-        System.out.println(BoardCode.encodeBoard(board));
 
         fillBoardWithTiles();
         fillBoardWithPieces();
 
-        if (gameController.turnManager.computerGame && gameController.turnManager.playerTeam == Piece.Team.BLACK)
+        if (gameController.turnManager.computerGame && gameController.turnManager.playerTeam == Board.Team.BLACK)
             flipTheBoard();
 
         if (gameController.turnManager.computerGame)
@@ -91,9 +89,10 @@ public class BoardManager {
             for (int j = 0; j < 8; j++) {
                 if (board.isEmpty(i, j))
                     continue;
-                Piece piece = board.get(i, j);
+                Board.Piece piece = board.pieces[i][j];
+                Board.Team team = board.teams[i][j];
 
-                PieceImg pieceImg = new PieceImg(piece, gameController);
+                PieceImg pieceImg = new PieceImg(board, piece, team, i, j, gameController);
                 pieces.add(pieceImg);
                 piecesPane.getChildren().add(pieceImg);
                 tiles[i][j].putPieceOn(pieceImg);
@@ -105,45 +104,54 @@ public class BoardManager {
 
     public void flipTheBoard() {
         tilesPane.setScaleY(-1);
+        tilesPane.setScaleX(-1);
         shadowsPane.setScaleY(-1);
+        shadowsPane.setScaleX(-1);
         piecesPane.setScaleY(-1);
+        piecesPane.setScaleX(-1);
         for (Node node : tilesPane.getChildren()) {
             node.setScaleY(-1);
+            node.setScaleX(-1);
             if (node.getClass() == Label.class) {
                 if(((Label)node).getAlignment().equals(Pos.BOTTOM_CENTER))
-                    ((Label)node).setAlignment(Pos.TOP_CENTER);
+                    ((Label) node).setAlignment(Pos.TOP_CENTER);
                 else if (((Label)node).getAlignment().equals(Pos.TOP_CENTER))
-                    ((Label)node).setAlignment(Pos.BOTTOM_CENTER);
+                    ((Label) node).setAlignment(Pos.BOTTOM_CENTER);
+                else if (((Label)node).getAlignment().equals(Pos.CENTER_LEFT))
+                    ((Label) node).setAlignment(Pos.CENTER_RIGHT);
+                else if (((Label)node).getAlignment().equals(Pos.CENTER_RIGHT))
+                    ((Label) node).setAlignment(Pos.CENTER_LEFT);
             }
         }
         for (PieceImg piece : pieces) {
             piece.setScaleY(-1);
+            piece.setScaleX(-1);
         }
     }
 
-    public void handleAdditional(Piece piece) {
-        if (piece == null)
+    public void handleAdditional(Move move) {
+        if (move == null)
             return;
-        if (piece.type == Piece.Type.ROOK) {
-            int fx = piece.x;
-            int fy = piece.y == 3 ? 0 : 7;
-            int ty = piece.y;
+        if (move.pre == Board.Piece.ROOK) {
+            int fx = move.fromX;
+            int fy = move.fromY;
+            int tx = move.toX;
+            int ty = move.toY;
 
             Tile from = tiles[fx][fy];
-            Tile to = tiles[fx][ty];
+            Tile to = tiles[tx][ty];
 
             PieceImg pieceImg = from.pieceImg;
+            pieceImg.x = tx;
+            pieceImg.y = ty;
             to.putPieceOn(pieceImg);
             from.takePieceFrom();
-
-            pieceImg.playTransition(to, false);
+            pieceImg.playTransition(to);
         }
-        if (piece.type == Piece.Type.PAWN) {
-            if (piece.x != 0 && piece.x != 7) {
-                Tile tile = tiles[piece.x][piece.y];
-                tile.pieceImg.die();
-                tile.takePieceFrom();
-            }
+        if (move.pre == Board.Piece.PAWNJ) {
+            Tile tile = tiles[move.fromX][move.fromY];
+            tile.pieceImg.die();
+            tile.takePieceFrom();
         }
     }
 }

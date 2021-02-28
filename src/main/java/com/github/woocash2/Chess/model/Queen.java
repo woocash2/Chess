@@ -4,10 +4,8 @@ import com.github.woocash2.Chess.model.utils.PositionUpdater;
 
 public interface Queen {
 
-    public static void updatePositions(Piece piece) {
-        piece.reachablePositions.clear();
-        piece.takeablePositions.clear();
-        Bishop.boardIteration(PositionUpdater.addToReachableFunction(piece), PositionUpdater.addToTakeableFunction(piece), piece.board, piece.x, piece.y);
-        Rook.boardIteration(PositionUpdater.addToReachableFunction(piece), PositionUpdater.addToTakeableFunction(piece), piece.board, piece.x, piece.y);
+    public static void updatePositions(Board board, int x, int y) {
+        Bishop.boardIteration(PositionUpdater.addMoveIfLegal(board, x, y), board, x, y);
+        Rook.boardIteration(PositionUpdater.addMoveIfLegal(board, x, y), board, x, y);
     }
 }

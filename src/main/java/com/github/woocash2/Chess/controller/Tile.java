@@ -4,8 +4,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import com.github.woocash2.Chess.model.Board;
-import com.github.woocash2.Chess.model.Piece;
 import javafx.util.Pair;
+
+import java.util.ArrayList;
 
 public class Tile extends Rectangle {
 
@@ -23,6 +24,8 @@ public class Tile extends Rectangle {
 
     public final GameController gameController;
     public PieceImg pieceImg;
+    public ArrayList<Tile> reachableTiles = new ArrayList<>();
+    public ArrayList<Tile> takeableTiles = new ArrayList<>();
 
     public Tile(Board board, int x, int y, Color color, GameController gameController) {
         super(100, 100, color);
@@ -56,16 +59,16 @@ public class Tile extends Rectangle {
 
         // What is the type of the mouse press?
 
-        boolean onOurNotSelected = (pieceImg != null) && (pieceImg.piece.team == gameController.turnManager.turn) && (pieceImg != selected);
-        boolean onOurSelected = (pieceImg != null) && (pieceImg.piece.team == gameController.turnManager.turn) && (pieceImg == selected);
-        boolean onTheirNotTakeable = (pieceImg != null) && (pieceImg.piece.team != gameController.turnManager.turn) && !takeable;
+        boolean onOurNotSelected = (pieceImg != null) && (pieceImg.team == gameController.turnManager.turn) && (pieceImg != selected);
+        boolean onOurSelected = (pieceImg != null) && (pieceImg.team == gameController.turnManager.turn) && (pieceImg == selected);
+        boolean onTheirNotTakeable = (pieceImg != null) && (pieceImg.team != gameController.turnManager.turn) && !takeable;
         boolean onEmpty = (pieceImg == null) && !reachable && !takeable;
         boolean onReachable = reachable;
         boolean onTakeable = takeable;
 
         if (onOurNotSelected) {
             deselect();
-            makeSelection(a, b);
+            makeSelection();
             gameController.actionManager.repositionSelected(a, b);
         }
         else if (onOurSelected) {
@@ -75,16 +78,14 @@ public class Tile extends Rectangle {
             deselect();
         }
         else if (onReachable) { // castling is being handled in PieceImg class
-            gameController.soundPlayer.playMove();
-            boolean notifyTurn = !willReachPromotion();
-            makeMoveToUs(notifyTurn);
+            possessPiece();
+            moveOrPromote(false);
         }
         else if (onTakeable) {
-            gameController.soundPlayer.playCapture();
             if (pieceImg != null)
                 pieceImg.die();
-            boolean notifyTurn = !willReachPromotion();
-            makeMoveToUs(notifyTurn);
+            possessPiece();
+            moveOrPromote(true);
         }
     }
 
@@ -97,9 +98,9 @@ public class Tile extends Rectangle {
 
         // What is the type of the mouse release?
 
-        boolean onOurNotSelected = (pieceImg != null) && (pieceImg.piece.team == gameController.turnManager.turn) && (pieceImg != selected);
-        boolean onOurSelected = (pieceImg != null) && (pieceImg.piece.team == gameController.turnManager.turn) && (pieceImg == selected);
-        boolean onTheirNotTakeable = (pieceImg != null) && (pieceImg.piece.team != gameController.turnManager.turn) && !takeable;
+        boolean onOurNotSelected = (pieceImg != null) && (pieceImg.team == gameController.turnManager.turn) && (pieceImg != selected);
+        boolean onOurSelected = (pieceImg != null) && (pieceImg.team == gameController.turnManager.turn) && (pieceImg == selected);
+        boolean onTheirNotTakeable = (pieceImg != null) && (pieceImg.team != gameController.turnManager.turn) && !takeable;
         boolean onEmpty = (pieceImg == null) && !reachable && !takeable;
         boolean onReachable = reachable;
         boolean onTakeable = takeable;
@@ -117,67 +118,81 @@ public class Tile extends Rectangle {
             gameController.actionManager.restoreSelectedPosition();
         }
         else if (onReachable) {
-            gameController.soundPlayer.playMove();
             selected.placeInstantly(this);
-            boolean notifyTurn = !willReachPromotion();
-            makeMoveToUs(notifyTurn);
+            possessPiece();
+            moveOrPromote(false);
         }
         else if (onTakeable) {
-            gameController.soundPlayer.playCapture();
             if (pieceImg != null)
                 pieceImg.die();
             selected.placeInstantly(this);
-            boolean notifyTurn = !willReachPromotion();
-            makeMoveToUs(notifyTurn);
+            possessPiece();
+            moveOrPromote(true);
         }
     }
 
-    public void makeSelection(double x, double y) {
+    public void makeSelection() {
         gameController.actionManager.releaseCnt = 0;
         gameController.actionManager.selectedPiece = pieceImg;
         gameController.actionManager.selectedTile = this;
         gameController.actionManager.selectedOriginX = pieceImg.getX();
         gameController.actionManager.selectedOriginY = pieceImg.getY();
-        pieceImg.showReachableAndTakeable();
+        showReachableAndTakeable();
         gameController.actionManager.putSelectedOnTop();
         setFill(highlightColor);
     }
 
     public void deselect() {
-        if (gameController.actionManager.selectedPiece != null)
-            gameController.actionManager.selectedPiece.hideReachableAndTakeable();
-        if (gameController.actionManager.selectedTile != null)
+        if (gameController.actionManager.selectedTile != null) {
+            gameController.actionManager.selectedTile.hideReachableAndTakeable();
             gameController.actionManager.selectedTile.setFill(gameController.actionManager.selectedTile.defaultColor);
+        }
         gameController.actionManager.selectedPiece = null;
         gameController.actionManager.selectedTile = null;
     }
 
-    public boolean willReachPromotion() {
-        PieceImg selected = gameController.actionManager.selectedPiece;
-        if (selected.piece.type == Piece.Type.PAWN) {
-            int a = selected.piece.x;
-            if ((selected.piece.team == Piece.Team.WHITE && a == 1 && x == 0) || (selected.piece.team == Piece.Team.BLACK && a == 6 && x == 7)) {
-                if (gameController.turnManager.computerGame && gameController.turnManager.turn != gameController.turnManager.playerTeam) {
-                    selected.hideReachableAndTakeable();
-                    gameController.actionManager.promotionPanel.chooseType(selected, gameController.turnManager.computerPromoType);
-                    return false; // rather unpleasant workaround
-                }
+    public void moveOrPromote(boolean took) {
+        deselect();
+        if (pieceImg.piece == Board.Piece.PAWNM) {
+            int a = pieceImg.x;
+            if ((pieceImg.team == Board.Team.WHITE && a == 1 && x == 0) || (pieceImg.team == Board.Team.BLACK && a == 6 && x == 7)) {
+                if (gameController.turnManager.computerGame && gameController.turnManager.turn != gameController.turnManager.playerTeam)
+                    gameController.actionManager.promotionPanel.chooseType(pieceImg, gameController.turnManager.computerPromoType, this, took);
                 else
-                    gameController.actionManager.promotionPanel.show(selected);
-                return true;
+                    gameController.actionManager.promotionPanel.show(pieceImg, this, took);
             }
+            else
+                pieceImg.move(this, null, took);
+
         }
-        return false;
+        else
+            pieceImg.move(this, null, took);
     }
 
-    public void makeMoveToUs(boolean notifyTurn) {
+    public void possessPiece() {
         PieceImg selected = gameController.actionManager.selectedPiece;
-        int a = selected.piece.x;
-        int b = selected.piece.y;
+        int a = selected.x;
+        int b = selected.y;
         gameController.boardManager.tiles[a][b].takePieceFrom();
         putPieceOn(selected);
-        deselect();
-        selected.move(this, notifyTurn);
+    }
+
+    public void showReachableAndTakeable() {
+        for (Tile tile : reachableTiles) {
+            tile.makeReachable();
+        }
+        for (Tile tile : takeableTiles) {
+            tile.makeTakeable();
+        }
+    }
+
+    public void hideReachableAndTakeable() {
+        for (Tile tile : reachableTiles) {
+            tile.makeUnreachable();
+        }
+        for (Tile tile : takeableTiles) {
+            tile.makeUnTakeable();
+        }
     }
 
     public void makeReachable() {

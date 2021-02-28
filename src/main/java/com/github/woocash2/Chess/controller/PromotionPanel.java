@@ -1,18 +1,17 @@
 package com.github.woocash2.Chess.controller;
 
+import com.github.woocash2.Chess.model.Board;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.TilePane;
 import javafx.scene.shape.Rectangle;
-import com.github.woocash2.Chess.model.Piece;
 import com.github.woocash2.Chess.model.utils.ImageCropper;
-import com.github.woocash2.Chess.model.PieceFactory;
 
 public class PromotionPanel {
 
     private final TilePane promotionPane;
     private final Rectangle paneBackground;
     private final Rectangle boardCover;
-    private final Piece.Type[] promoTypes = {Piece.Type.QUEEN, Piece.Type.ROOK, Piece.Type.BISHOP, Piece.Type.KNIGHT};
+    private final Board.Piece[] promoTypes = {Board.Piece.QUEEN, Board.Piece.ROOK, Board.Piece.BISHOP, Board.Piece.KNIGHT};
     public GameController gameController;
 
     public PromotionPanel(GameController controller) {
@@ -22,22 +21,21 @@ public class PromotionPanel {
         boardCover = gameController.boardCover;
     }
 
-    public void show(PieceImg promoPiece) {
+    public void show(PieceImg promoPiece, Tile target, boolean took) {
         boardCover.setVisible(true); // disables pieces movements during promotion
 
-        Piece.Team team = promoPiece.piece.team;
+        Board.Team team = promoPiece.team;
         paneBackground.setVisible(true);
         promotionPane.setVisible(true);
 
-        for (Piece.Type type : promoTypes) {
-            ImageView view = new ImageView(ImageCropper.getImageByTeamAndType(promoPiece.piece.team, type));
+        for (Board.Piece type : promoTypes) {
+            ImageView view = new ImageView(ImageCropper.getImageByTeamAndType(promoPiece.team, type));
             view.setFitHeight(100);
             view.setFitWidth(100);
 
             view.setOnMouseClicked(e -> {
-                chooseType(promoPiece, type);
+                chooseType(promoPiece, type, target, took);
                 hide();
-                gameController.turnManager.notifyTurnMade();
             });
 
             promotionPane.getChildren().add(view);
@@ -45,12 +43,9 @@ public class PromotionPanel {
     }
 
     // for computer promotion purposes
-    public void chooseType(PieceImg promoPiece, Piece.Type type) {
-        int x = promoPiece.piece.x;
-        int y = promoPiece.piece.y;
-
-        promoPiece.piece.transform(type);
-        promoPiece.setImage(ImageCropper.getImage(promoPiece.piece));
+    public void chooseType(PieceImg promoPiece, Board.Piece type, Tile target, boolean took) {
+        promoPiece.transform(type);
+        promoPiece.move(target, type, took);
     }
 
     public void hide() {

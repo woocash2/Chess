@@ -1,6 +1,6 @@
 package com.github.woocash2.Chess.model.utils;
 
-import com.github.woocash2.Chess.model.Piece;
+import com.github.woocash2.Chess.model.Board;
 
 public interface PieceSquareTable {
 
@@ -81,21 +81,22 @@ public interface PieceSquareTable {
             -50,-30,-30,-30,-30,-30,-30,-50
     };
 
-    public static double positionEvaluation(Piece piece, boolean opponnentQueenPresent) {
-        int x = piece.x;
-        int y = piece.y;
-        if (piece.team == Piece.Team.BLACK)
+    public static double positionEvaluation(Board board, int x, int y) {
+        Board.Team team = board.teams[x][y];
+        Board.Piece piece = board.pieces[x][y];
+        if (team == Board.Team.BLACK)
             x = 7 - x;
         int i = 8 * x + y;
-        int multiplier = piece.team == Piece.Team.WHITE ? 1 : -1;
+        boolean opponnentQueenPresent = team == Board.Team.WHITE ? board.blackQueens > 0 : board.whiteQueens > 0;
 
-        return multiplier * switch (piece.type) {
-            case PAWN -> pawnArray[i];
+        return switch (piece) {
+            case PAWN, PAWNM, PAWNJ -> pawnArray[i];
             case KNIGHT -> knightArray[i];
             case BISHOP -> bishopArray[i];
-            case ROOK -> rookArray[i];
+            case ROOK, ROOKM -> rookArray[i];
             case QUEEN -> queenArray[i];
-            case KING -> opponnentQueenPresent ? kingMiddleGameArray[i] : kingEndGameArray[i];
+            case KING, KINGM -> opponnentQueenPresent ? kingMiddleGameArray[i] : kingEndGameArray[i];
+            default -> 0;
         };
     }
 }

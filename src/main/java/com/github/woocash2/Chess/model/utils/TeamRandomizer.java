@@ -1,20 +1,20 @@
 package com.github.woocash2.Chess.model.utils;
 
-import com.github.woocash2.Chess.model.Piece;
+import com.github.woocash2.Chess.model.Board;
 
 public interface TeamRandomizer {
-    public static Piece.Team getRandomTeam() {
+    public static Board.Team getRandomTeam() {
         double d = Math.random();
         if (d < 0.5)
-            return Piece.Team.WHITE;
+            return Board.Team.WHITE;
         else
-            return Piece.Team.BLACK;
+            return Board.Team.BLACK;
     }
 
-    public static Piece.Team getOpposite(Piece.Team team) {
-        if (team == Piece.Team.WHITE)
-            return Piece.Team.BLACK;
+    public static Board.Team getOpposite(Board.Team team) {
+        if (team == Board.Team.WHITE)
+            return Board.Team.BLACK;
         else
-            return Piece.Team.WHITE;
+            return Board.Team.WHITE;
     }
 }

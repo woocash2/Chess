@@ -1,20 +1,20 @@
 package com.github.woocash2.Chess.model;
 
 import com.github.woocash2.Chess.controller.GameController;
-import com.github.woocash2.Chess.controller.PieceImg;
 import com.github.woocash2.Chess.model.utils.PieceSquareTable;
+import com.github.woocash2.Chess.test.BoardTemplate;
 import javafx.util.Pair;
+import jdk.nio.mapmode.ExtendedMapMode;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class Computer {
 
     public Board board;
     public GameController gameController;
-    public Piece.Team team;
+    public Board.Team team;
 
     public int pawnPts = 100;
     public int bishopPts = 300;
@@ -29,25 +29,23 @@ public class Computer {
 
     public double maxEval = 1000000.0;
 
-    Map<Character, Integer> points = new HashMap<>();
+    Map<Board.Piece, Integer> points = new HashMap<>();
 
-    int[] reachedPositions = new int[10];
+    int[] reachedPositions = new int[20];
 
-    public Computer(GameController controller, Piece.Team tm) {
+    public Computer(GameController controller, Board.Team tm) {
         gameController = controller;
         team = tm;
-        points.put('p', pawnPts);
-        points.put('P', -pawnPts);
-        points.put('b', bishopPts);
-        points.put('B', -bishopPts);
-        points.put('n', knightPts);
-        points.put('N', -knightPts);
-        points.put('r', rookPts);
-        points.put('R', -rookPts);
-        points.put('q', queenPts);
-        points.put('Q', -queenPts);
-        points.put('k', kingPts);
-        points.put('K', -kingPts);
+        points.put(Board.Piece.PAWN, pawnPts);
+        points.put(Board.Piece.PAWNJ, pawnPts);
+        points.put(Board.Piece.PAWNM, pawnPts);
+        points.put(Board.Piece.BISHOP, bishopPts);
+        points.put(Board.Piece.KNIGHT, knightPts);
+        points.put(Board.Piece.ROOK, rookPts);
+        points.put(Board.Piece.ROOKM, rookPts);
+        points.put(Board.Piece.QUEEN, queenPts);
+        points.put(Board.Piece.KING, kingPts);
+        points.put(Board.Piece.KINGM, kingPts);
     }
 
     public void addBoard(Board brd) {
@@ -55,28 +53,8 @@ public class Computer {
     }
 
     public Move getRandomMove() {
-        ArrayList<Move> moves = new ArrayList<>();
-
-        for (PieceImg piece : gameController.boardManager.pieces) {
-            if (piece.piece.team != team)
-                continue;
-
-            int fx = piece.piece.x;
-            int fy = piece.piece.y;
-            for (Pair<Integer, Integer> pos : piece.piece.reachablePositions) {
-                int tx = pos.getKey();
-                int ty = pos.getValue();
-                moves.add(new Move(fx, fy, tx, ty));
-            }
-            for (Pair<Integer, Integer> pos : piece.piece.takeablePositions) {
-                int tx = pos.getKey();
-                int ty = pos.getValue();
-                moves.add(new Move(fx, fy, tx, ty));
-            }
-        }
-
-        Collections.shuffle(moves);
-        return moves.get(0);
+        Collections.shuffle(board.moves);
+        return board.moves.get(0);
     }
 
     public Move findMove() {
@@ -85,14 +63,10 @@ public class Computer {
         int maxDepth = 4;
 
         while (wholeTime < 0.5) {
-
             long startTime = System.nanoTime();
 
             Board brd = new Board(board);
-            if (team == Piece.Team.WHITE)
-                best = getMax(brd, 0, maxDepth, maxEval);
-            else
-                best = getMin(brd, 0, maxDepth, -maxEval);
+            best = minimax(brd, team, 0, maxDepth, -maxEval, maxEval);
 
             long stopTime = System.nanoTime();
             double t = (double) (stopTime - startTime) / 1e9;
@@ -105,142 +79,130 @@ public class Computer {
         return best.getValue();
     }
 
-    public Pair<Double, Move> getMin(Board brd, int depth, int maxDepth, double currentMax) {
-        if (depth == maxDepth) {
-            reachedPositions[depth]++;
-            return new Pair<Double, Move>(evaluate(brd) + depth, null);
+    public Pair<Double, Move> minimax(Board brd, Board.Team team, int depth, int maxdepth, double alfa, double beta) {
+        if (depth == maxdepth) {
+            double d = evaluate(brd);
+            d -= team == Board.Team.WHITE ? depth : -depth;
+            return new Pair<>(d, null);
         }
 
-        double best = maxEval;
-        Move move = null;
+        brd.updateMoves(team);
 
-        int allMoves = 0;
+        if (brd.moves.size() == 0 && team == Board.Team.WHITE)
+            return brd.isWhiteKingAttacked() ? new Pair<>(-maxEval + depth, null) : new Pair<>(0.0, null);
+        if (brd.moves.size() == 0 && team == Board.Team.BLACK)
+            return brd.isBlackKingAttacked() ? new Pair<>(maxEval - depth, null) : new Pair<>(0.0, null);
 
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
 
-                Piece piece = brd.get(i, j);
-                if (piece == null || piece.team == Piece.Team.WHITE)
-                    continue;
+        Board.Team opponnent = team == Board.Team.WHITE ? Board.Team.BLACK : Board.Team.WHITE;
+        ArrayList<Move> moves = (ArrayList<Move>) brd.moves.clone();
+        moves = (ArrayList<Move>) orderedMoves(brd, moves);
 
-                piece.updatePositions();
-                int fx = i;
-                int fy = j;
+        Move best = null;
 
-                piece.reachablePositions.addAll(piece.takeablePositions);
-                allMoves += piece.reachablePositions.size();
+        for (Move move : moves) {
 
-                for (Pair<Integer, Integer> pos : piece.reachablePositions) {
-                    int tx = pos.getKey();
-                    int ty = pos.getValue();
-                    Board afterMove = new Board(brd);
-                    Piece nPiece = afterMove.get(piece.x, piece.y);
-                    nPiece.move(tx, ty);
+            brd.move(move);
+            Pair<Double, Move> next = minimax(brd, opponnent, depth + 1, maxdepth, alfa, beta);
+            brd.unMove(move);
 
-                    // to handle eventual promotion
-                    Piece.Type[] types = nPiece.type == Piece.Type.PAWN && nPiece.x == 7 ? new Piece.Type[] {Piece.Type.QUEEN, Piece.Type.ROOK, Piece.Type.KNIGHT, Piece.Type.BISHOP} : new Piece.Type[] {nPiece.type};
-                    boolean promote = nPiece.type == Piece.Type.PAWN && nPiece.x == 7;
-
-                    for (Piece.Type type : types) {
-                        nPiece.transform(type);
-                        Pair<Double, Move> next = getMax(afterMove, depth + 1, maxDepth, best);
-                        double ev = next.getKey();
-
-                        if (ev < best) {
-                            best = ev;
-                            move = new Move(fx, fy, tx, ty);
-                            move.promoteTo = promote ? type : null;
-                        }
-
-                        if (best <= currentMax)
-                            return new Pair<>(best, move);
-                    }
+            if (team == Board.Team.WHITE) {
+                if (next.getKey() > alfa) {
+                    alfa = next.getKey();
+                    best = move;
                 }
+                if (alfa >= beta)
+                    return new Pair<>(alfa, move);
+            }
+
+            if (team == Board.Team.BLACK) {
+                if (next.getKey() < beta) {
+                    beta = next.getKey();
+                    best = move;
+                }
+                if (alfa >= beta)
+                    return new Pair<>(beta, move);
             }
         }
 
-        if (allMoves == 0) {
-            return brd.isBlackKingAttacked() ? new Pair<>(maxEval - depth, null) : new Pair<>(0.0, null);
-        }
-
-        return new Pair<>(best, move);
+        return team == Board.Team.WHITE ? new Pair<>(alfa, best) : new Pair<>(beta, best);
     }
 
-    public Pair<Double, Move> getMax(Board brd, int depth, int maxDepth, double currentMin) {
-        if (depth == maxDepth) {
-            reachedPositions[depth]++;
-            return new Pair<Double, Move>(evaluate(brd) - depth, null);
-        }
-
-        double best = -maxEval;
-        Move move = null;
-
-        int allMoves = 0;
-
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-
-                Piece piece = brd.get(i, j);
-                if (piece == null || piece.team == Piece.Team.BLACK)
-                    continue;
-
-                piece.updatePositions();
-                int fx = i;
-                int fy = j;
-
-                piece.reachablePositions.addAll(piece.takeablePositions);
-                allMoves += piece.reachablePositions.size();
-
-                for (Pair<Integer, Integer> pos : piece.reachablePositions) {
-                    int tx = pos.getKey();
-                    int ty = pos.getValue();
-                    Board afterMove = new Board(brd);
-                    Piece nPiece = afterMove.get(piece.x, piece.y);
-                    nPiece.move(tx, ty);
-
-                    Piece.Type[] types = nPiece.type == Piece.Type.PAWN && nPiece.x == 0 ? new Piece.Type[] {Piece.Type.QUEEN, Piece.Type.ROOK, Piece.Type.KNIGHT, Piece.Type.BISHOP} : new Piece.Type[] {nPiece.type};
-                    boolean promote = nPiece.type == Piece.Type.PAWN && nPiece.x == 0;
-
-                    for (Piece.Type type : types) {
-                        nPiece.transform(type);
-                        Pair<Double, Move> next = getMin(afterMove, depth + 1, maxDepth, best);
-                        double ev = next.getKey();
-
-                        if (ev > best) {
-                            best = ev;
-                            move = new Move(fx, fy, tx, ty);
-                            move.promoteTo = promote ? type : null;
-                        }
-
-                        if (best >= currentMin)
-                            return new Pair<>(best, move);
-                    }
-                }
+    public List<Move> orderedMoves(Board brd, ArrayList<Move> moves) {
+        ArrayList<Pair<Move, Double>> moveScores = new ArrayList<>();
+        for (Move move : moves) {
+            double score = 0.0;
+            if (move.taken != Board.Piece.EMPTY) {
+                score += 10 * points.get(move.taken) - points.get(move.pre);
             }
+            if (move.post != move.pre && move.pre == Board.Piece.PAWNM) {
+                score += points.get(move.post);
+            }
+
+            ArrayList<Integer> vals = new ArrayList<>();
+            vals.add(0);
+            Pawn.boardIteration(p -> {
+                if (Pawn.isPawn(board.pieces[p.getKey()][p.getValue()]) && board.teams[p.getKey()][p.getValue()] != move.team)
+                    vals.add(points.get(move.pre));
+                return true;
+            }, brd, move.toX, move.toY, move.team);
+            score -= vals.get(vals.size() - 1);
+
+            moveScores.add(new Pair<>(move, score));
+        }
+        moveScores.sort((a, b) -> a.getValue() >= b.getValue() ? (a.getValue().equals(b.getValue()) ? 0 : -1) : 1);
+        return moveScores.stream().map(Pair::getKey).collect(Collectors.toList());
+    }
+
+    public double attackers(Board brd, int x, int y) {
+        Board.Piece piece = brd.pieces[x][y];
+        Board.Team team = brd.teams[x][y];
+        double multiplier = team == Board.Team.WHITE ? 1 : -1;
+        ArrayList<Double> scores = new ArrayList<>();
+
+        Function<Pair<Integer, Integer>, Double> f = p -> {
+            if (board.teams[p.getKey()][p.getValue()] != Board.Team.EMPTY && board.teams[p.getKey()][p.getValue()] != team)
+                scores.add(points.get(board.pieces[p.getKey()][p.getValue()]) * multiplier);
+            return 0.0;
+        };
+
+        switch (piece) {
+            case KING, KINGM -> King.boardIteration(f, brd, x, y);
+            case ROOK, ROOKM -> Rook.boardIteration(f, brd, x, y);
+            case PAWN, PAWNJ, PAWNM -> Pawn.boardIteration(f, brd, x, y, team);
+            case QUEEN -> { Bishop.boardIteration(f, brd, x, y); Rook.boardIteration(f, brd, x, y); }
+            case BISHOP -> Bishop.boardIteration(f, brd, x, y);
+            case KNIGHT -> Knight.boardIteration(f, brd, x, y);
         }
 
-        if (allMoves == 0) {
-            return brd.isWhiteKingAttacked() ? new Pair<>(-maxEval + depth, null) : new Pair<>(0.0, null);
-        }
-
-        return new Pair<>(best, move);
+        return scores.stream().mapToDouble(Double::doubleValue).sum();
     }
 
     public double evaluate(Board brd) {
         double eval = 0;
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                if (brd.get(i, j) == null)
+                Board.Piece p = brd.pieces[i][j];
+                if (p == Board.Piece.EMPTY)
                     continue;
-                char c = brd.get(i, j).identifier;
-                Piece.Team t = Character.isLowerCase(c) ? Piece.Team.WHITE : Piece.Team.BLACK;
-                boolean opponentQueenPresent = t == Piece.Team.WHITE ? brd.blackQueenPos != null : brd.whiteQueenPos != null;
 
-                eval += points.get(c) * piecesWeight;
-                eval -= points.get(c) * brd.numOfAttackers(t, i, j) * attackingWeight;
-                eval += PieceSquareTable.positionEvaluation(brd.get(i, j), opponentQueenPresent);
+                Board.Team t = brd.teams[i][j];
+                int multiplier = t == Board.Team.WHITE ? 1 : -1;
+
+                eval += points.get(p) * piecesWeight * multiplier;
+                eval += PieceSquareTable.positionEvaluation(brd, i, j) * positionWeight * multiplier;
+                eval += attackers(brd, i, j) * attackingWeight;
             }
         }
         return eval;
+    }
+
+
+
+    public static void main(String[] args) {
+        Board board = new Board(BoardTemplate.standard);
+        Computer computer = new Computer(null, Board.Team.WHITE);
+        computer.addBoard(board);
+        computer.findMove();
     }
 }

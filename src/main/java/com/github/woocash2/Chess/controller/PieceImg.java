@@ -1,34 +1,51 @@
 package com.github.woocash2.Chess.controller;
 
+import com.github.woocash2.Chess.model.Board;
+import com.github.woocash2.Chess.model.Move;
+import com.github.woocash2.Chess.model.utils.PositionUpdater;
 import javafx.animation.TranslateTransition;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 import javafx.util.Pair;
-import com.github.woocash2.Chess.model.King;
-import com.github.woocash2.Chess.model.Piece;
 import com.github.woocash2.Chess.model.utils.ImageCropper;
 
 public class PieceImg extends ImageView {
 
     public GameController gameController;
-    public Piece piece;
+    Board board;
+    public Board.Piece piece;
+    public Board.Team team;
+    public int x, y;
 
-    public PieceImg(Piece piece, GameController gameController) {
-        super(ImageCropper.getImage(piece));
+    public PieceImg(Board board, Board.Piece piece, Board.Team team, int x, int y, GameController gameController) {
+        super(ImageCropper.getImageByTeamAndType(team, piece));
         setFitWidth(100);
         setFitHeight(100);
+        this.board = board;
         this.piece = piece;
+        this.team = team;
         this.gameController = gameController;
+        this.x = x;
+        this.y = y;
     }
 
-    public void move(Tile target, boolean notifyTurn) {
-        int x = target.x;
-        int y = target.y;
+    public void move(Tile target, Board.Piece promo, boolean took) {
+        int a = target.x;
+        int b = target.y;
 
-        Piece additional = piece.move(x, y);
+        Move move = PositionUpdater.getMove(board, x, y ,a ,b);
+
+        if (promo != null)
+            move.post = promo;
+
+        Move additional = board.move(move);
+        x = a;
+        y = b;
+
+        piece = board.pieces[x][y];
         gameController.boardManager.handleAdditional(additional);
         gameController.boardCover.setVisible(true);
-        playTransition(target, notifyTurn);
+        playTransitionAndNotifyTurn(target, took);
     }
 
     public void placeInstantly(Tile tile) {
@@ -38,29 +55,7 @@ public class PieceImg extends ImageView {
         setY(y);
     }
 
-    public void showReachableAndTakeable() {
-        for (Pair<Integer, Integer> pos : piece.reachablePositions) {
-            int x = pos.getKey(), y = pos.getValue();
-            gameController.boardManager.tiles[x][y].makeReachable();
-        }
-        for (Pair<Integer, Integer> pos : piece.takeablePositions) {
-            int x = pos.getKey(), y = pos.getValue();
-            gameController.boardManager.tiles[x][y].makeTakeable();
-        }
-    }
-
-    public void hideReachableAndTakeable() {
-        for (Pair<Integer, Integer> pos : piece.reachablePositions) {
-            int x = pos.getKey(), y = pos.getValue();
-            gameController.boardManager.tiles[x][y].makeUnreachable();
-        }
-        for (Pair<Integer, Integer> pos : piece.takeablePositions) {
-            int x = pos.getKey(), y = pos.getValue();
-            gameController.boardManager.tiles[x][y].makeUnTakeable();
-        }
-    }
-
-    public void playTransition(Tile target, boolean notifyTurn) {
+    public void playTransitionAndNotifyTurn(Tile target, boolean took) {
         TranslateTransition transition = new TranslateTransition(Duration.millis(200), this);
         transition.setToX(target.getCenter().getKey() - getX());
         transition.setToY(target.getCenter().getValue() - getY());
@@ -70,15 +65,34 @@ public class PieceImg extends ImageView {
             setY(getY() + translateYProperty().getValue());
             translateXProperty().set(0);
             translateYProperty().set(0);
-            if (notifyTurn)
-                gameController.turnManager.notifyTurnMade();
+            gameController.turnManager.notifyTurnMade();
         });
 
+        if (took) gameController.soundPlayer.playCapture();
+        else gameController.soundPlayer.playMove();
         transition.play();
     }
 
+    public void playTransition(Tile target) {
+        TranslateTransition transition = new TranslateTransition(Duration.millis(200), this);
+        transition.setToX(target.getCenter().getKey() - getX());
+        transition.setToY(target.getCenter().getValue() - getY());
+
+        transition.setOnFinished(e -> {
+            setX(getX() + translateXProperty().getValue());
+            setY(getY() + translateYProperty().getValue());
+            translateXProperty().set(0);
+            translateYProperty().set(0);
+        });
+        transition.play();
+    }
+
+    public void transform(Board.Piece piece) {
+        setImage(ImageCropper.getImageByTeamAndType(team, piece));
+        this.piece = piece;
+    }
+
     public void die() {
-        piece.alive = false;
         gameController.boardManager.pieces.remove(this);
         gameController.piecesPane.getChildren().remove(this);
     }

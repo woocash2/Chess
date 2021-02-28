@@ -8,7 +8,7 @@ import java.util.function.Function;
 
 public interface King {
 
-    public static <T, E> void boardIteration(Function<Pair<Integer, Integer>, T> f1, Function<Pair<Integer, Integer>, E> f2, Board board, int x, int y) {
+    public static <T, E> void boardIteration(Function<Pair<Integer, Integer>, T> f, Board board, int x, int y) {
         Iterator<Pair<Integer, Integer>> kingIterator = new Iterator<Pair<Integer, Integer>>() {
             Pair<Integer, Integer> current = new Pair<>(x - 1, y - 1);
 
@@ -39,34 +39,26 @@ public interface King {
         for (int i = 0; i < 8; i++) {
             Pair<Integer, Integer> field = kingIterator.next();
             int a = field.getKey(), b = field.getValue();
-            if (board.inBoardRange(a, b) && board.isEmpty(a, b))
-                f1.apply(field);
-            else if (board.inBoardRange(a, b))
-                f2.apply(field);
+            if (board.inBoardRange(a, b))
+                f.apply(field);
         }
     }
 
-    public static void updatePositions(Piece piece) {
-        piece.reachablePositions.clear();
-        piece.takeablePositions.clear();
-        boardIteration(PositionUpdater.addToReachableFunction(piece), PositionUpdater.addToTakeableFunction(piece), piece.board, piece.x, piece.y);
-        considerCastling(piece);
+    public static void updatePositions(Board board, int x, int y) {
+        boardIteration(PositionUpdater.addMoveIfLegal(board, x, y), board, x, y);
+        considerCastling(board, x, y);
     }
 
-    public static void considerCastling(Piece piece) { // assumes same color rook
-
-        if (piece.type != Piece.Type.KING || piece.moved)
+    public static void considerCastling(Board board, int x, int y) { // assumes same color rook
+        Board.Piece piece = board.pieces[x][y];
+        if (piece != Board.Piece.KING)
             return;
 
-        int x = piece.x;
-        int y = piece.y;
+        Board.Team team = board.teams[x][y];
+        Board.Piece leftRook = board.pieces[x][0];
+        Board.Piece rightRook = board.pieces[x][7];
 
-        Board board = piece.board;
-        Piece.Team team = piece.team;
-        Piece leftRook = board.pieces[x][0];
-        Piece rightRook = board.pieces[x][7];
-
-        if (leftRook != null && leftRook.type == Piece.Type.ROOK && !leftRook.moved) {
+        if (leftRook == Board.Piece.ROOK) {
             boolean leftSuccess = true;
             for (int j = 0; j <= y; j++) {
                 if (j >= y - 2 && board.numOfAttackers(team, x, j) > 0)
@@ -75,10 +67,10 @@ public interface King {
                     leftSuccess = false;
             }
             if (leftSuccess)
-                piece.reachablePositions.add(new Pair<>(x, y - 2));
+                board.moves.add(new Move(x, y, x, y - 2, Board.Piece.KING, Board.Piece.KINGM, team, Board.Piece.EMPTY));
         }
 
-        if (rightRook != null && rightRook.type == Piece.Type.ROOK && !rightRook.moved) {
+        if (rightRook == Board.Piece.ROOK) {
             boolean rightSuccess = true;
             for (int j = y; j <= 7; j++) {
                 if (j <= y + 2 && board.numOfAttackers(team, x, j) > 0)
@@ -87,7 +79,7 @@ public interface King {
                     rightSuccess = false;
             }
             if (rightSuccess)
-                piece.reachablePositions.add(new Pair<>(x, y + 2));
+                board.moves.add(new Move(x, y, x, y + 2, Board.Piece.KING, Board.Piece.KINGM, team, Board.Piece.EMPTY));
         }
     }
 }

@@ -1,8 +1,8 @@
 package com.github.woocash2.Chess.controller;
 
+import com.github.woocash2.Chess.model.Board;
 import javafx.animation.FadeTransition;
 import javafx.scene.control.Label;
-import com.github.woocash2.Chess.model.Piece;
 import javafx.util.Duration;
 
 public class GameResult {
@@ -21,12 +21,12 @@ public class GameResult {
         });
     }
 
-    public void show(Piece.Team winner) {
+    public void show(Board.Team winner) {
         if (winner == null)
             result.setText("DRAW");
-        if (winner == Piece.Team.WHITE)
+        if (winner == Board.Team.WHITE)
             result.setText("WHITE WINS");
-        if (winner == Piece.Team.BLACK)
+        if (winner == Board.Team.BLACK)
             result.setText("BLACK WINS");
 
         result.setOpacity(0.0);

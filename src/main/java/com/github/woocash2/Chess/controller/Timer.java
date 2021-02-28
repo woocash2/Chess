@@ -1,9 +1,9 @@
 package com.github.woocash2.Chess.controller;
 
+import com.github.woocash2.Chess.model.Board;
 import com.github.woocash2.Chess.model.utils.TeamRandomizer;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
-import com.github.woocash2.Chess.model.Piece;
 
 public class Timer extends Thread {
 
@@ -11,11 +11,11 @@ public class Timer extends Thread {
     private long millisToSecondPass;
     public Label time;
     private GameController gameController;
-    Piece.Team team;
+    Board.Team team;
 
     private boolean stop = false;
 
-    public Timer(long m, Piece.Team color, Label label, GameController game) {
+    public Timer(long m, Board.Team color, Label label, GameController game) {
         mins = m;
         secs = 0;
         millisToSecondPass = 1000;

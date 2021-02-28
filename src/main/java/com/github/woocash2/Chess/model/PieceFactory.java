@@ -1,58 +1,45 @@
 package com.github.woocash2.Chess.model;
-import com.github.woocash2.Chess.model.*;
+
+import javafx.util.Pair;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class PieceFactory {
 
-    public static HashMap<Character, Piece.Type> typeByChar = new HashMap<>();
-    public static HashMap<Piece.Type, Character> charByType = new HashMap<>();
+    public static HashMap<Character, Pair<Board.Piece, Board.Team>> typeByChar = new HashMap<>();
+    public static HashMap<Pair<Board.Piece, Board.Team>, Character> charByType = new HashMap<>();
 
     static {
-        typeByChar.put('k', Piece.Type.KING);
-        typeByChar.put('K', Piece.Type.KING);
-        typeByChar.put('q', Piece.Type.QUEEN);
-        typeByChar.put('Q', Piece.Type.QUEEN);
-        typeByChar.put('n', Piece.Type.KNIGHT);
-        typeByChar.put('N', Piece.Type.KNIGHT);
-        typeByChar.put('b', Piece.Type.BISHOP);
-        typeByChar.put('B', Piece.Type.BISHOP);
-        typeByChar.put('r', Piece.Type.ROOK);
-        typeByChar.put('R', Piece.Type.ROOK);
-        typeByChar.put('p', Piece.Type.PAWN);
-        typeByChar.put('P', Piece.Type.PAWN);
+        typeByChar.put('k', new Pair<>(Board.Piece.KING, Board.Team.WHITE));
+        typeByChar.put('K', new Pair<>(Board.Piece.KING, Board.Team.BLACK));
+        typeByChar.put('q', new Pair<>(Board.Piece.QUEEN, Board.Team.WHITE));
+        typeByChar.put('Q', new Pair<>(Board.Piece.QUEEN, Board.Team.BLACK));
+        typeByChar.put('n', new Pair<>(Board.Piece.KNIGHT, Board.Team.WHITE));
+        typeByChar.put('N', new Pair<>(Board.Piece.KNIGHT, Board.Team.BLACK));
+        typeByChar.put('b', new Pair<>(Board.Piece.BISHOP, Board.Team.WHITE));
+        typeByChar.put('B', new Pair<>(Board.Piece.BISHOP, Board.Team.BLACK));
+        typeByChar.put('r', new Pair<>(Board.Piece.ROOK, Board.Team.WHITE));
+        typeByChar.put('R', new Pair<>(Board.Piece.ROOK, Board.Team.BLACK));
+        typeByChar.put('p', new Pair<>(Board.Piece.PAWN, Board.Team.WHITE));
+        typeByChar.put('P', new Pair<>(Board.Piece.PAWN, Board.Team.BLACK));
         // moved pieces
-        typeByChar.put('x', Piece.Type.KING);
-        typeByChar.put('X', Piece.Type.KING);
-        typeByChar.put('y', Piece.Type.ROOK);
-        typeByChar.put('Y', Piece.Type.ROOK);
-        typeByChar.put('z', Piece.Type.PAWN);
-        typeByChar.put('Z', Piece.Type.PAWN);
+        typeByChar.put('x', new Pair<>(Board.Piece.KINGM, Board.Team.WHITE));
+        typeByChar.put('X', new Pair<>(Board.Piece.KINGM, Board.Team.BLACK));
+        typeByChar.put('y', new Pair<>(Board.Piece.ROOKM, Board.Team.WHITE));
+        typeByChar.put('Y', new Pair<>(Board.Piece.ROOKM, Board.Team.BLACK));
+        typeByChar.put('z', new Pair<>(Board.Piece.PAWNM, Board.Team.WHITE));
+        typeByChar.put('Z', new Pair<>(Board.Piece.PAWNM, Board.Team.BLACK));
         // just moved
-        typeByChar.put('t', Piece.Type.PAWN);
-        typeByChar.put('T', Piece.Type.PAWN);
+        typeByChar.put('t', new Pair<>(Board.Piece.PAWNJ, Board.Team.WHITE));
+        typeByChar.put('T', new Pair<>(Board.Piece.PAWNJ, Board.Team.BLACK));
+        //empty
+        typeByChar.put('-', new Pair<>(Board.Piece.EMPTY, Board.Team.EMPTY));
 
-
-        charByType.put(Piece.Type.KING, 'k');
-        charByType.put(Piece.Type.QUEEN, 'q');
-        charByType.put(Piece.Type.KNIGHT, 'n');
-        charByType.put(Piece.Type.BISHOP, 'b');
-        charByType.put(Piece.Type.ROOK, 'r');
-        charByType.put(Piece.Type.PAWN, 'p');
+        for (Map.Entry<Character, Pair<Board.Piece, Board.Team>> entry : typeByChar.entrySet()) {
+            charByType.put(entry.getValue(), entry.getKey());
+        }
     }
 
 
-    public Piece get(int i, int j, char c, Board board) {
-        if (c == '-')
-            return null;
-        Piece.Team team = Character.isLowerCase(c) ? Piece.Team.WHITE : Piece.Team.BLACK;
-        Piece.Type type = typeByChar.get(c);
-        Piece piece = new Piece(i, j, team, type, board, c);
-        if (Character.toLowerCase(c) == 'x' || Character.toLowerCase(c) == 'y' || Character.toLowerCase(c) == 'z')
-            piece.moved = true;
-        if (Character.toLowerCase(c) == 't')
-            piece.justMoved = piece.moved = true;
-        piece.transform(piece.type);
-        return piece;
-    }
 }

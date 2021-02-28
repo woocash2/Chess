@@ -1,9 +1,9 @@
 package com.github.woocash2.Chess.model.utils;
 
+import com.github.woocash2.Chess.model.Board;
 import com.github.woocash2.Chess.model.PieceFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
-import com.github.woocash2.Chess.model.Piece;
 
 public interface ImageCropper {
 
@@ -17,32 +17,23 @@ public interface ImageCropper {
         return new WritableImage(grid.getPixelReader(), x, y, 200, 200);
     }
 
-    public static WritableImage getImage(Piece piece) {
-        return getImageByName(piece.identifier);
-    }
-
-    public static WritableImage getImageByName(char name) {
+    public static WritableImage getImageByTeamAndType(Board.Team team, Board.Piece piece) {
         int x, y;
-        if (Character.isLowerCase(name)) // this means White
+        if (team == Board.Team.WHITE) // this means White
             y = 0;
         else
             y = 1;
 
-        x = switch (Character.toLowerCase(name)) {
-            case 'k' -> 0;
-            case 'q' -> 1;
-            case 'b' -> 2;
-            case 'n' -> 3;
-            case 'r' -> 4;
-            default -> 5;
+        x = switch (piece) {
+            case KING, KINGM -> 0;
+            case QUEEN -> 1;
+            case BISHOP -> 2;
+            case KNIGHT -> 3;
+            case ROOK, ROOKM -> 4;
+            case PAWN, PAWNM, PAWNJ -> 5;
+            default -> 0;
         };
 
         return cropImg(x, y);
-    }
-
-    public static WritableImage getImageByTeamAndType(Piece.Team team, Piece.Type type) {
-        char name = PieceFactory.charByType.get(type);
-        name = team == Piece.Team.WHITE ? Character.toLowerCase(name) : Character.toUpperCase(name);
-        return getImageByName(name);
     }
 }

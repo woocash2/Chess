@@ -1,6 +1,6 @@
 package com.github.woocash2.Chess.controller;
 
-import com.github.woocash2.Chess.model.Piece;
+import com.github.woocash2.Chess.model.Board;
 import com.github.woocash2.Chess.model.utils.TeamRandomizer;
 import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
@@ -70,7 +70,7 @@ public class MenuController {
 
     public static int chosenTime = 10;
     public static boolean computerGame = false;
-    public static Piece.Team playerTeam = Piece.Team.WHITE;
+    public static Board.Team playerTeam = Board.Team.WHITE;
 
     Paint buttonColor;
     Paint highlightColor = Color.INDIANRED;
@@ -140,11 +140,11 @@ public class MenuController {
             slideVboxIn(teamVbox);
         });
         whiteLabel.setOnMouseClicked(e -> {
-            playerTeam = Piece.Team.WHITE;
+            playerTeam = Board.Team.WHITE;
             launchGame(0);
         });
         blackLabel.setOnMouseClicked(e -> {
-            playerTeam = Piece.Team.BLACK;
+            playerTeam = Board.Team.BLACK;
             launchGame(0);
         });
         randomLabel.setOnMouseClicked(e -> {
