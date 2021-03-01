@@ -156,20 +156,20 @@ public class Computer {
 
     public double attackers(Board brd, int x, int y) {
         Board.Piece piece = brd.pieces[x][y];
-        Board.Team team = brd.teams[x][y];
-        double multiplier = team == Board.Team.WHITE ? 1 : -1;
+        Board.Team t = brd.teams[x][y];
+        double multiplier = t == Board.Team.WHITE ? 1 : -1;
         ArrayList<Double> scores = new ArrayList<>();
 
         Function<Pair<Integer, Integer>, Double> f = p -> {
-            if (board.teams[p.getKey()][p.getValue()] != Board.Team.EMPTY && board.teams[p.getKey()][p.getValue()] != team)
-                scores.add(points.get(board.pieces[p.getKey()][p.getValue()]) * multiplier);
+            if (brd.teams[p.getKey()][p.getValue()] != Board.Team.EMPTY && brd.teams[p.getKey()][p.getValue()] != t)
+                scores.add(points.get(brd.pieces[p.getKey()][p.getValue()]) * multiplier);
             return 0.0;
         };
 
         switch (piece) {
             case KING, KINGM -> King.boardIteration(f, brd, x, y);
             case ROOK, ROOKM -> Rook.boardIteration(f, brd, x, y);
-            case PAWN, PAWNJ, PAWNM -> Pawn.boardIteration(f, brd, x, y, team);
+            case PAWN, PAWNJ, PAWNM -> Pawn.boardIteration(f, brd, x, y, t);
             case QUEEN -> { Bishop.boardIteration(f, brd, x, y); Rook.boardIteration(f, brd, x, y); }
             case BISHOP -> Bishop.boardIteration(f, brd, x, y);
             case KNIGHT -> Knight.boardIteration(f, brd, x, y);
@@ -191,7 +191,7 @@ public class Computer {
 
                 eval += points.get(p) * piecesWeight * multiplier;
                 eval += PieceSquareTable.positionEvaluation(brd, i, j) * positionWeight * multiplier;
-                eval += attackers(brd, i, j) * attackingWeight;
+                eval -= points.get(p) * multiplier * brd.numOfAttackers(t, i, j) * attackingWeight;
             }
         }
         return eval;
